@@ -85,6 +85,7 @@ var copycat = function(a)
 
     drawResults = function()
     {
+        console.log(won)
         if (won == 1)
         {
             a.push()
@@ -381,11 +382,12 @@ var copycat = function(a)
 
                 if (whatGuessAreWeOn > 5)
                 {
+                    console.log(letterBoxes)
                     game = false;
                     var totalRight = 0;
                     for (var i = 0; i < 5; i++)
                     {
-                        if (letterBoxes[5][i].getState == 2)
+                        if (letterBoxes[5][i].getState() == 2)
                         {
                             totalRight += 1;
                         }
