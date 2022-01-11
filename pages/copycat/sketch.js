@@ -384,21 +384,13 @@ var copycat = function(a)
                 {
                     console.log(letterBoxes)
                     game = false;
-                    var totalRight = 0;
-                    for (var i = 0; i < 5; i++)
+                    if (checkIfWon())
                     {
-                        if (letterBoxes[5][i].getState() == 2)
-                        {
-                            totalRight += 1;
-                        }
-                    }
-                    if (totalRight == 5)
-                    {
-                        won = 1;
+                        won = 1
                     }
                     else
                     {
-                        won = -1;
+                        won = -1
                     }
                 }
                 else
