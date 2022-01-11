@@ -166,6 +166,30 @@ var copycat = function(a)
             a.pop();
         }
 
+        drawKeyState(state)
+        {
+            a.push();
+            if (this.state == -1)
+            {
+                a.fill(50);
+            }
+            else if (this.state == 0)
+            {
+                a.fill(140, 140, 140);
+                // a.noFill();
+            }
+            else if (this.state == 1)
+            {
+                a.fill(176, 155, 0);
+            }
+            else if (this.state == 2)
+            {
+                a.fill(15, 176, 0);
+            }
+            a.rect(this.x, this.y, this.w, this.h, 10);
+            a.pop();
+        }
+
         checkIfClick() {
             if (a.mouseX >= this.x && a.mouseX <= this.x + this.w && a.mouseY > this.y && a.mouseY < this.y + this.h)
             {
@@ -189,9 +213,14 @@ var copycat = function(a)
             this.state = state
         }
 
+        setState(state)
+        {
+            this.state = state;
+        }
+
         drawLetterKey()
         {
-            this.drawKey();
+            this.drawKeyState(this.state)
             a.push()
             a.fill(0);
             a.textSize(20);
@@ -255,10 +284,21 @@ var copycat = function(a)
                             }
                         }
                     }
+                    else
+                    {
+                        dict[currentEntry[l]] = -1
+                        letterBoxes[whatGuessAreWeOn][l].setState(-1)
+                    }
+                    for (var k = 0; k < keys.length; k++)
+                    {
+                        if (keys[k].letter == currentEntry[l])
+                        {
+                            keys[k].setState(dict[currentEntry[l]])
+                        }
+                    }
                 }
                 whatGuessAreWeOn++;
                 currentEntry = "";
-                console.log(dict);
             }
         }
     }
