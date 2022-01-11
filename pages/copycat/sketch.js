@@ -48,6 +48,20 @@ var copycat = function(a)
         a.background(77, 77, 77);
         drawKeyboard();
         drawLetterBoxes();
+        drawEntry()
+    }
+
+    drawEntry = function()
+    {
+        a.push()
+        a.fill(255);
+        a.textAlign(a.CENTER, a.CENTER)
+        a.textSize(30)
+        for (var l = 0; l < currentEntry.length; l++)
+        {
+            a.text(currentEntry[l], a.width/2 - (letterBoxW + 5)*2.5 + l*(letterBoxW + 5) + letterBoxW/2, whatGuessAreWeOn*(letterBoxW + 5) + 30 + letterBoxH/2 + 2)
+        }
+        a.pop()
     }
 
     drawLetterBoxes = function()
