@@ -6,6 +6,10 @@ var QWERTY = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
 
 var dict = {};
 
+var specialKeySize = 85;
+var keySizeW = 35;
+var keySizeH = 50;
+var keySpacing = 4;
 var keys = [];
 var enterKey;
 var deleteKey;
@@ -14,6 +18,7 @@ var guesses = [[""], [""], [""], [""], [""], [""]]
 var letterBoxes = [[], [], [], [], [], []];
 var letterBoxW = 55;
 var letterBoxH = 55;
+var boxSpacing = 5;
 var whatGuessAreWeOn = 0;
 var word = "TOAST"
 
@@ -30,6 +35,7 @@ var copycat = function(a)
     {
         let rand = a.floor(a.random(wordsString.length));
         word = wordsString[rand].toUpperCase();
+        debugText = rand;
 
         var canvas = a.createCanvas(600, 600);
         canvas.parent("sketch");
@@ -39,18 +45,18 @@ var copycat = function(a)
         {
             for (var k = 0; k < QWERTY[r].length; k++)
             {
-                keys.push(new LetterKey(a.width/2 - QWERTY[r].length*(keySize + 5)/2 + k*(keySize + 5), 425 + (keySize + 5)*r, keySize, keySize, QWERTY[r][k], 0))
+                keys.push(new LetterKey(a.width/2 - QWERTY[r].length*(keySizeW + keySpacing)/2 + k*(keySizeW + keySpacing), 425 + (keySizeH + keySpacing)*r, keySizeW, keySizeH, QWERTY[r][k], 0))
             }
         }
-        enterKey = new EnterKey(a.width/2 - QWERTY[2].length*(keySize + 5)/2 - specialKeySize - 5, 425 + (keySize + 5)*2, specialKeySize, keySize);
+        enterKey = new EnterKey(a.width/2 - QWERTY[2].length*(keySizeW + keySpacing)/2 - specialKeySize - keySpacing, 425 + (keySizeH + keySpacing)*2, specialKeySize, keySizeH);
 
-        deleteKey = new DeleteKey(a.width/2 + QWERTY[2].length*(keySize + 5)/2, 425 + (keySize + 5)*2, specialKeySize, keySize)
+        deleteKey = new DeleteKey(a.width/2 + QWERTY[2].length*(keySizeW + keySpacing)/2, 425 + (keySizeH + keySpacing)*2, specialKeySize, keySizeH)
 
         for (var y = 0; y < 6; y++)
         {
             for (var x = 0; x < 5; x++)
             {
-                letterBoxes[y].push(new LetterBox(a.width/2 - 5*(letterBoxW + 5)/2 + x*(letterBoxW + 5), y*(letterBoxH + 5) + 30, letterBoxW, letterBoxH));
+                letterBoxes[y].push(new LetterBox(a.width/2 - 5*(letterBoxW + boxSpacing)/2 + x*(letterBoxW + boxSpacing), y*(letterBoxH + boxSpacing) + 30, letterBoxW, letterBoxH));
             }
         }
     }
@@ -77,7 +83,7 @@ var copycat = function(a)
         a.textSize(30)
         for (var l = 0; l < currentEntry.length; l++)
         {
-            a.text(currentEntry[l], a.width/2 - (letterBoxW + 5)*2.5 + l*(letterBoxW + 5) + letterBoxW/2, whatGuessAreWeOn*(letterBoxW + 5) + 30 + letterBoxH/2 + 2)
+            a.text(currentEntry[l], a.width/2 - (letterBoxW + boxSpacing)*2.5 + l*(letterBoxW + boxSpacing) + letterBoxW/2, whatGuessAreWeOn*(letterBoxW + boxSpacing) + 30 + letterBoxH/2 + 2)
         }
         a.pop()
     }
@@ -157,8 +163,6 @@ var copycat = function(a)
         }
     }
 
-    var specialKeySize = 85;
-    var keySize = 40;
     drawKeyboard = function()
     {
         for (var k = 0; k < keys.length; k++)
@@ -172,7 +176,6 @@ var copycat = function(a)
 
     a.mouseClicked = function()
     {
-        debugText = a.mouseX.toString() + " " + a.mouseY.toString();
         console.log(a.mouseY)
         for (var key of keys)
         {
