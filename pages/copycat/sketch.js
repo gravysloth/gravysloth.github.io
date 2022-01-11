@@ -5,13 +5,14 @@ var QWERTY = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
 var keys = [];
 var enterKey;
 var deleteKey;
+var currentEntry = "";
+var guesses = [[""], [""], [""], [""], [""], [""]]
+var whatGuessAreWeOn = 0;
 
 var copycat = function(a)
 {
-    console.log("toooot");
     a.setup = function()
     {
-        console.log("ah");
         var canvas = a.createCanvas(600, 600);
         canvas.parent("sketch");
         a.frameRate(30);
@@ -34,18 +35,7 @@ var copycat = function(a)
         drawKeyboard();
     }
 
-    drawKey = function(x, y, w, h, letter)
-    {
-        a.push();
-        a.fill(143, 143, 143);
-        a.rect(x, y, w, h, 10);
-        a.fill(0);
-        a.textSize(20);
-        a.textAlign(a.CENTER, a.CENTER);
-        a.text(letter, x + w/2, y + h/2);
-        a.pop();
-    }
-
+    
 
     var specialKeySize = 85;
     var keySize = 40;
@@ -60,10 +50,17 @@ var copycat = function(a)
         deleteKey.drawDeleteKey();
     }
 
-    // -1 = wrong
-    //  0 = neutral
-    //  1 = yellow
-    //  2 = green
+    a.mouseClicked = function()
+    {
+        for (var key of keys)
+        {
+            key.checkIfLetterClick();
+        }
+        enterKey.checkIfEnterClick();
+        deleteKey.checkIfDeleteClick();
+        console.log(currentEntry);
+        console.log(guesses);
+    }
 
     class Key
     {
@@ -81,7 +78,20 @@ var copycat = function(a)
             a.rect(this.x, this.y, this.w, this.h, 10);
             a.pop();
         }
+
+        checkIfClick() {
+            if (a.mouseX >= this.x && a.mouseX <= this.x + this.w && a.mouseY > this.y && a.mouseY < this.y + this.h)
+            {
+                return true;
+            }
+            return false;
+        }
     }
+
+    // -1 = wrong
+    //  0 = neutral
+    //  1 = yellow
+    //  2 = green
 
     class LetterKey extends Key
     {
@@ -102,6 +112,17 @@ var copycat = function(a)
             a.text(this.letter, this.x + this.w/2, this.y + this.h/2);
             a.pop()
         }
+
+        checkIfLetterClick()
+        {
+            if (this.checkIfClick())
+            {
+                if (currentEntry.length < 5)
+                {
+                    currentEntry += this.letter;
+                }
+            }
+        }
     }
 
     class EnterKey extends Key
@@ -121,6 +142,17 @@ var copycat = function(a)
             a.text("ENTER", this.x + this.w/2, this.y + this.h/2);
             a.pop()
         }
+
+        checkIfEnterClick()
+        {
+            if (this.checkIfClick())
+            {
+                console.log("enter")
+                guesses[whatGuessAreWeOn] = currentEntry;
+                whatGuessAreWeOn++;
+                currentEntry = "";
+            }
+        }
     }
 
     class DeleteKey extends Key
@@ -139,6 +171,14 @@ var copycat = function(a)
             a.textAlign(a.CENTER, a.CENTER);
             a.text("⌫", this.x + this.w/2, this.y + this.h/2);
             a.pop()
+        }
+
+        checkIfDeleteClick()
+        {
+            if (this.checkIfClick())
+            {
+                currentEntry = currentEntry.slice(0, -1);
+            }
         }
     }
 }
