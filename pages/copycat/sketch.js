@@ -104,7 +104,7 @@ var copycat = function(a)
         {
             a.push()
             a.noStroke()
-            a.fill(166, 103, 98, 150)
+            a.fill(161, 40, 31, 150)
             a.rect(50, 200, a.width - 100, a.height - 400, 10)
             a.fill(255)
             a.textSize(80)
