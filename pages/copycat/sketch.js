@@ -7,7 +7,12 @@ var enterKey;
 var deleteKey;
 var currentEntry = "";
 var guesses = [[""], [""], [""], [""], [""], [""]]
+var guessesKey = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+var letterBoxes = [[], [], [], [], [], []];
+var letterBoxW = 55;
+var letterBoxH = 55;
 var whatGuessAreWeOn = 0;
+word = "toast"
 
 var copycat = function(a)
 {
@@ -27,15 +32,90 @@ var copycat = function(a)
         enterKey = new EnterKey(a.width/2 - QWERTY[2].length*(keySize + 5)/2 - specialKeySize - 5, 425 + (keySize + 5)*2, specialKeySize, keySize);
 
         deleteKey = new DeleteKey(a.width/2 + QWERTY[2].length*(keySize + 5)/2, 425 + (keySize + 5)*2, specialKeySize, keySize)
+
+        for (var y = 0; y < 6; y++)
+        {
+            for (var x = 0; x < 5; x++)
+            {
+                letterBoxes[y].push(new LetterBox(a.width/2 - 5*(letterBoxW + 5)/2 + x*(letterBoxW + 5), y*(letterBoxH + 5) + 30, letterBoxW, letterBoxH));
+            }
+        }
     }
 
     a.draw = function()
     {
         a.background(77, 77, 77);
         drawKeyboard();
+        drawLetterBoxes();
     }
 
-    
+    drawLetterBoxes = function()
+    {
+        for (var y = 0; y < letterBoxes.length; y++)
+        {
+            for (var x = 0; x < letterBoxes[y].length; x++)
+            {
+                letterBoxes[y][x].drawLetterBox();
+            }
+        }
+    }
+
+    class LetterBox
+    {
+        constructor(x, y, w, h)
+        {
+            this.x = x
+            this.y = y
+            this.w = w
+            this.h = h
+            this.letter = ""
+            this.state = 0;
+        }
+
+        getLetter()
+        {
+            return this.letter;
+        }
+
+        setLetter(letter)
+        {
+            this.letter = letter;
+        }
+
+        getState()
+        {
+            return this.state;
+        }
+
+        setState(state)
+        {
+            this.state = state;
+        }
+
+        drawLetterBox()
+        {
+            a.push();
+            if (this.state == -1)
+            {
+                a.fill(50);
+            }
+            else if (this.state == 0)
+            {
+                // a.fill(140, 140, 140);
+                a.noFill();
+            }
+            else if (this.state == 1)
+            {
+                a.fill(176, 155, 0);
+            }
+            else if (this.state == 2)
+            {
+                a.fill(15, 176, 0);
+            }
+            a.rect(this.x, this.y, this.w, this.h, 5);
+            a.pop();
+        }
+    }
 
     var specialKeySize = 85;
     var keySize = 40;
@@ -74,7 +154,7 @@ var copycat = function(a)
 
         drawKey() {
             a.push();
-            a.fill(143, 143, 143);
+            a.fill(140, 140, 140);
             a.rect(this.x, this.y, this.w, this.h, 10);
             a.pop();
         }
@@ -182,7 +262,5 @@ var copycat = function(a)
         }
     }
 }
-
-
 
 var copycatP5 = new p5(copycat, "sketch")
