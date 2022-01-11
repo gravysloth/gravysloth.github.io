@@ -24,6 +24,9 @@ var word = "TOAST"
 
 var debugText = "help"
 
+var game = true;
+var won = 0;
+
 var copycat = function(a)
 {
     a.preload = function()
@@ -73,6 +76,45 @@ var copycat = function(a)
         a.textSize(20);
         a.text(debugText, 10, 20);
         a.pop()
+
+        if (!game)
+        {
+            drawResults();
+        }
+    }
+
+    drawResults = function()
+    {
+        if (won == 1)
+        {
+            a.push()
+            a.noStroke()
+            a.fill(98, 166, 124, 150)
+            a.rect(50, 200, a.width - 100, a.height - 400, 10)
+            a.fill(255)
+            a.textSize(80)
+            a.textAlign(a.CENTER, a.CENTER)
+            a.text("YOU WON", a.width/2, a.height/2)
+            a.textSize(15)
+            a.text("reload to play again. I don't want to code a restart button", a.width/2, a.height/2 + 60)
+            a.pop()
+        }
+        else
+        {
+            a.push()
+            a.noStroke()
+            a.fill(166, 103, 98, 150)
+            a.rect(50, 200, a.width - 100, a.height - 400, 10)
+            a.fill(255)
+            a.textSize(80)
+            a.textAlign(a.CENTER, a.CENTER)
+            a.text("YOU LOST", a.width/2, a.height/2)
+            a.textSize(15)
+            a.text("reload to play again. I don't want to code a restart button", a.width/2, a.height/2 + 55)
+            a.textSize(15)
+            a.text(word + ", the word was " + word, a.width/2, a.height/2 + 80)
+            a.pop()
+        }
     }
 
     drawEntry = function()
@@ -176,14 +218,15 @@ var copycat = function(a)
 
     a.mouseClicked = function()
     {
-        console.log(a.mouseY)
-        for (var key of keys)
+        if (game)
         {
-            key.checkIfLetterClick();
+            for (var key of keys)
+            {
+                key.checkIfLetterClick();
+            }
+            enterKey.checkIfEnterClick();
+            deleteKey.checkIfDeleteClick();
         }
-        enterKey.checkIfEnterClick();
-        deleteKey.checkIfDeleteClick();
-        console.log(currentEntry);
     }
 
     class Key
@@ -300,7 +343,6 @@ var copycat = function(a)
         {
             if (this.checkIfClick())
             {
-                console.log("enter")
                 guesses[whatGuessAreWeOn] = currentEntry;
                 for (var l = 0; l < currentEntry.length; l++)
                 {
@@ -336,6 +378,27 @@ var copycat = function(a)
                 }
                 whatGuessAreWeOn++;
                 currentEntry = "";
+
+                if (whatGuessAreWeOn > 5)
+                {
+                    game = false;
+                    var totalRight = 0;
+                    for (var i = 0; i < 5; i++)
+                    {
+                        if (letterBoxes[5][i].getState == 2)
+                        {
+                            totalRight += 1;
+                        }
+                    }
+                    if (totalRight == 5)
+                    {
+                        won = 1;
+                    }
+                    else
+                    {
+                        won = -1;
+                    }
+                }
             }
         }
     }
