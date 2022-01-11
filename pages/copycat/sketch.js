@@ -157,8 +157,9 @@ var copycat = function(a)
 
     a.mouseClicked = function()
     {
-        interactX = mouseX;
-        interactY = mouseY;
+        console.log("click")
+        interactX = a.mouseX;
+        interactY = a.mouseY;
         for (var key of keys)
         {
             key.checkIfLetterClick();
@@ -166,6 +167,12 @@ var copycat = function(a)
         enterKey.checkIfEnterClick();
         deleteKey.checkIfDeleteClick();
         console.log(currentEntry);
+    }
+
+    a.touchEnded = function()
+    {
+        console.log("touch");
+        currentEntry = "ROAST";
     }
 
     class Key
@@ -210,7 +217,7 @@ var copycat = function(a)
         }
 
         checkIfClick() {
-            if (a.mouseX >= this.x && a.mouseX <= this.x + this.w && a.mouseY > this.y && a.mouseY < this.y + this.h)
+            if (interactX >= this.x && interactX <= this.x + this.w && interactY > this.y && interactY < this.y + this.h)
             {
                 return true;
             }
