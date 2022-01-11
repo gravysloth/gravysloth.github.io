@@ -15,6 +15,8 @@ var letterBoxH = 55;
 var whatGuessAreWeOn = 0;
 var word = "TOAST"
 
+var debugText = "help"
+
 var copycat = function(a)
 {
     a.setup = function()
@@ -49,6 +51,12 @@ var copycat = function(a)
         drawKeyboard();
         drawLetterBoxes();
         drawEntry()
+
+        a.push()
+        a.fill(255, 195, 161)
+        a.textSize(20);
+        a.text(debugText, 10, 20);
+        a.pop()
     }
 
     drawEntry = function()
@@ -154,7 +162,8 @@ var copycat = function(a)
 
     a.mouseClicked = function()
     {
-        console.log("click")
+        debugText = a.mouseX.toString() + " " + a.mouseY.toString();
+        console.log(a.mouseY)
         for (var key of keys)
         {
             key.checkIfLetterClick();
