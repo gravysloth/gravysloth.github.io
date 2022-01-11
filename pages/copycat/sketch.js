@@ -8,6 +8,7 @@ var deleteKey;
 
 var copycat = function(a)
 {
+    console.log("toooot");
     a.setup = function()
     {
         console.log("ah");
