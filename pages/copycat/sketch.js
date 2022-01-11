@@ -401,7 +401,36 @@ var copycat = function(a)
                         won = -1;
                     }
                 }
+                else
+                {
+                    if (checkIfWon())
+                    {
+                        won = 1
+                        game = false
+                    }
+                }
             }
+        }
+    }
+
+    checkIfWon = function()
+    {
+        console.log(letterBoxes)
+        var totalRight = 0;
+        for (var i = 0; i < 5; i++)
+        {
+            if (letterBoxes[whatGuessAreWeOn-1][i].getState() == 2)
+            {
+                totalRight += 1;
+            }
+        }
+        if (totalRight == 5)
+        {
+            return true
+        }
+        else
+        {
+            return false
         }
     }
 
