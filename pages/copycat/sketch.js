@@ -2,17 +2,18 @@ var QWERTY = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
 ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
 ["Z", "X", "C", "V", "B", "N", "M"]];
 
+var dict = {};
+
 var keys = [];
 var enterKey;
 var deleteKey;
 var currentEntry = "";
 var guesses = [[""], [""], [""], [""], [""], [""]]
-var guessesKey = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 var letterBoxes = [[], [], [], [], [], []];
 var letterBoxW = 55;
 var letterBoxH = 55;
 var whatGuessAreWeOn = 0;
-word = "toast"
+var word = "TOAST"
 
 var copycat = function(a)
 {
@@ -113,6 +114,13 @@ var copycat = function(a)
                 a.fill(15, 176, 0);
             }
             a.rect(this.x, this.y, this.w, this.h, 5);
+            a.pop()
+
+            a.push()
+            a.fill(255);
+            a.textAlign(a.CENTER, a.CENTER)
+            a.textSize(30)
+            a.text(this.letter, this.x + this.w/2, this.y + this.h/2 + 2)
             a.pop();
         }
     }
@@ -139,7 +147,6 @@ var copycat = function(a)
         enterKey.checkIfEnterClick();
         deleteKey.checkIfDeleteClick();
         console.log(currentEntry);
-        console.log(guesses);
     }
 
     class Key
@@ -229,8 +236,29 @@ var copycat = function(a)
             {
                 console.log("enter")
                 guesses[whatGuessAreWeOn] = currentEntry;
+                for (var l = 0; l < currentEntry.length; l++)
+                {
+                    letterBoxes[whatGuessAreWeOn][l].setLetter(currentEntry[l])
+                    if (word.includes(currentEntry[l]))
+                    {
+                        if (word[l] == currentEntry[l])
+                        {
+                            letterBoxes[whatGuessAreWeOn][l].setState(2)
+                            dict[currentEntry[l]] = 2
+                        }
+                        else
+                        {
+                            letterBoxes[whatGuessAreWeOn][l].setState(1)
+                            if (dict[currentEntry[l]] != 2)
+                            {
+                                dict[currentEntry[l]] = 1
+                            }
+                        }
+                    }
+                }
                 whatGuessAreWeOn++;
                 currentEntry = "";
+                console.log(dict);
             }
         }
     }
