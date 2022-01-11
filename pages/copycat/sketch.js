@@ -10,6 +10,7 @@ var copycat = function(a)
 {
     a.setup = function()
     {
+        console.log("ah");
         var canvas = a.createCanvas(600, 600);
         canvas.parent("sketch");
         a.frameRate(30);
