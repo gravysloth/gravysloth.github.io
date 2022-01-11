@@ -15,6 +15,9 @@ var letterBoxH = 55;
 var whatGuessAreWeOn = 0;
 var word = "TOAST"
 
+var interactX;
+var interactY;
+
 var copycat = function(a)
 {
     a.setup = function()
@@ -154,6 +157,8 @@ var copycat = function(a)
 
     a.mouseClicked = function()
     {
+        interactX = mouseX;
+        interactY = mouseY;
         for (var key of keys)
         {
             key.checkIfLetterClick();
