@@ -83,6 +83,26 @@ var copycat = function(a)
         }
     }
 
+    a.keyTyped = function()
+    {
+        if (a.keyCode >= 65 && a.keyCode <= 90)
+        {
+            addLetter(a.key.toUpperCase());
+        }
+    }
+
+    a.keyPressed = function()
+    {
+        if (a.keyCode == 8)
+        {
+            deleteClicked();
+        }
+        else if (a.keyCode == 13)
+        {
+            enterClicked();
+        }
+    }
+
     drawResults = function()
     {
         console.log(won)
@@ -314,10 +334,7 @@ var copycat = function(a)
         {
             if (this.checkIfClick())
             {
-                if (currentEntry.length < 5)
-                {
-                    currentEntry += this.letter;
-                }
+                addLetter(this.letter);
             }
         }
     }
@@ -344,7 +361,75 @@ var copycat = function(a)
         {
             if (this.checkIfClick())
             {
-                guesses[whatGuessAreWeOn] = currentEntry;
+                enterClicked();
+            }
+        }
+    }
+
+    checkIfWon = function()
+    {
+        console.log(letterBoxes)
+        var totalRight = 0;
+        for (var i = 0; i < 5; i++)
+        {
+            if (letterBoxes[whatGuessAreWeOn-1][i].getState() == 2)
+            {
+                totalRight += 1;
+            }
+        }
+        if (totalRight == 5)
+        {
+            return true
+        }
+        else
+        {
+            return false
+        }
+    }
+
+    class DeleteKey extends Key
+    {
+        constructor(x, y, w, h)
+        {
+            super(x, y, w, h)
+        }
+
+        drawDeleteKey()
+        {
+            this.drawKey();
+            a.push()
+            a.fill(0);
+            a.textSize(20);
+            a.textAlign(a.CENTER, a.CENTER);
+            a.text("⌫", this.x + this.w/2, this.y + this.h/2);
+            a.pop()
+        }
+
+        checkIfDeleteClick()
+        {
+            if (this.checkIfClick())
+            {
+                deleteClicked()
+            }
+        }
+    }
+
+    addLetter = function(letter)
+    {
+        if (currentEntry.length < 5)
+        {
+            currentEntry += letter;
+        }
+    }
+
+    deleteClicked = function()
+    {
+        currentEntry = currentEntry.slice(0, -1);
+    }
+
+    enterClicked = function()
+    {
+        guesses[whatGuessAreWeOn] = currentEntry;
                 for (var l = 0; l < currentEntry.length; l++)
                 {
                     letterBoxes[whatGuessAreWeOn][l].setLetter(currentEntry[l])
@@ -401,56 +486,6 @@ var copycat = function(a)
                         game = false
                     }
                 }
-            }
-        }
-    }
-
-    checkIfWon = function()
-    {
-        console.log(letterBoxes)
-        var totalRight = 0;
-        for (var i = 0; i < 5; i++)
-        {
-            if (letterBoxes[whatGuessAreWeOn-1][i].getState() == 2)
-            {
-                totalRight += 1;
-            }
-        }
-        if (totalRight == 5)
-        {
-            return true
-        }
-        else
-        {
-            return false
-        }
-    }
-
-    class DeleteKey extends Key
-    {
-        constructor(x, y, w, h)
-        {
-            super(x, y, w, h)
-        }
-
-        drawDeleteKey()
-        {
-            this.drawKey();
-            a.push()
-            a.fill(0);
-            a.textSize(20);
-            a.textAlign(a.CENTER, a.CENTER);
-            a.text("⌫", this.x + this.w/2, this.y + this.h/2);
-            a.pop()
-        }
-
-        checkIfDeleteClick()
-        {
-            if (this.checkIfClick())
-            {
-                currentEntry = currentEntry.slice(0, -1);
-            }
-        }
     }
 }
 
