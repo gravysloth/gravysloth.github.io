@@ -176,6 +176,11 @@ var voronoi = function(a)
             CircleCells.push(this)
         }
 
+        AddLine(line)
+        {
+            this.lines.push(line);
+        }
+
         GetPosition()
         {
             return a.createVector(this.x, this.y)
