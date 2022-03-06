@@ -2,7 +2,9 @@ var voronoi = function(a)
 {
     var DrawObjects = []
 
-    var pointCircles = []
+    var CircleCells = []
+
+    var radius = 60
 
     a.preload = function()
     {
@@ -28,23 +30,20 @@ var voronoi = function(a)
 
     a.mouseClicked = function()
     {
-        var ptCircle = new PointCircle(a.mouseX, a.mouseY, 60);
+        var ptCircle = new CircleCell(a.mouseX, a.mouseY, radius);
 
-        CheckIntersections();
+        CheckIntersections(ptCircle);
     }
 
-    CheckIntersections = function()
+    CheckIntersections = function(newPtCircle)
     {
-        for (var i = 0; i < pointCircles.length - 1; i++)
+        var ptCircle = newPtCircle
+        for (var k = 0; k < CircleCells.length - 1; k++)
         {
-            var ptCircle = pointCircles[i]
-            for (var k = i + 1; k < pointCircles.length; k++)
+            var other = CircleCells[k];
+            if (ptCircle.GetPosition().dist(other.GetPosition()) < ptCircle.GetRadius() + other.GetRadius())
             {
-                var other = pointCircles[k];
-                if (ptCircle.GetPosition().dist(other.GetPosition()) < ptCircle.GetRadius() + other.GetRadius())
-                {
-                    TwoCircleIntersection(ptCircle, other)
-                }
+                TwoCircleIntersection(ptCircle, other)
             }
         }
     }
@@ -61,8 +60,20 @@ var voronoi = function(a)
         var x2 = c1.GetPosition().x + (dx * a/d)
         var y2 = c1.GetPosition().y + (dy * a/d)
 
-        new Point(x2, y2);
+        var midPt = new Point(x2, y2)
+        midPt.SetColor(181, 171, 245)
 
+        var h = Math.sqrt((c1.GetRadius() * c1.GetRadius()) - (a * a))
+
+        var rx = -dy * (h/d)
+        var ry = dx * (h/d)
+
+        var xi = x2 + rx
+        var xi_prime = x2 - rx
+        var yi = y2 + ry
+        var yi_prime = y2 - ry
+
+        new LineSegment(xi, yi, xi_prime, yi_prime)
     }
 
     class LineSegment
@@ -83,7 +94,7 @@ var voronoi = function(a)
             {
                 a.noFill()
                 a.stroke(50, 168, 82)
-                a.strokeWeight(4)
+                a.strokeWeight(2)
                 a.line(this.x1, this.y1, this.x2, this.y2)
             }
             a.pop()
@@ -97,6 +108,8 @@ var voronoi = function(a)
             this.x = x;
             this.y = y;
             
+            this.color = a.color(50, 168, 82)
+
             DrawObjects.push(this)
         }
 
@@ -105,11 +118,16 @@ var voronoi = function(a)
             a.push();
             {
                 a.noFill();
-                a.stroke(50, 168, 82);
+                a.stroke(this.color);
                 a.strokeWeight(4);
                 a.point(this.x, this.y);
             }
             a.pop();
+        }
+
+        SetColor(r, g, b)
+        {
+            this.color = a.color(r, g, b)
         }
     }
 
@@ -122,6 +140,11 @@ var voronoi = function(a)
             this.r = r;
 
             DrawObjects.push(this)
+        }
+
+        SetRadius(r)
+        {
+            this.r = r
         }
 
         Draw()
@@ -138,7 +161,7 @@ var voronoi = function(a)
         }
     }
 
-    class PointCircle
+    class CircleCell
     {
         constructor(x, y, r)
         {
@@ -148,7 +171,9 @@ var voronoi = function(a)
             this.point = new Point(x, y)
             this.circle = new Circle(x, y, r)
 
-            pointCircles.push(this)
+            this.lines = [];
+
+            CircleCells.push(this)
         }
 
         GetPosition()
