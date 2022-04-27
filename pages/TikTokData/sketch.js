@@ -7,9 +7,14 @@ var TikTokData = function(a)
     var VideoListDict = {}
     var Days = ["S", "M", "T", "W", "Th", "F", "S"]
     var VideoListDayFreq = [0, 0, 0, 0, 0, 0, 0]
+    var VideoListLargestFreq = 0
+
+    var TimesOnline
+    var TimesOnlineDict = {}
 
     a.preload = function()
     {
+        TimesOnline = []
         data = a.loadJSON("data/user_data.json")
         console.log("json loaded")
     }
@@ -19,13 +24,27 @@ var TikTokData = function(a)
         var canvas = a.createCanvas(1000, 600)
         canvas.parent("sketch")
         a.frameRate(30)
+        a.noLoop()
         
         VideoList = data["Activity"]["Video Browsing History"]["VideoList"]
+        
+        var date
+        var dateSplit = a.split(a.split(VideoList[0]["Date"], " ")[0], "-")
+        var timeSplit = a.split(a.split(VideoList[0]["Date"], " ")[1], ":")
+        var lastTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2])
+        var currTime
+        var newSession = false
+        var BREAK_INTERVAL = 600000
+        
+        var sessionStart = lastTime
+        var sessionEnd = lastTime
 
-        for (var i = 0; i < VideoList.length; i++)
+        //for (var i = 0; i < VideoList.length; i++)
+        for (var i = 0; i < 1000; i++)
         {
-            var date = a.split(VideoList[i]["Date"], " ")[0]
-            var dateFormatted = new Date(a.split(date, "-")[0], a.split(date, "-")[1]-1, a.split(date, "-")[2])
+            date = a.split(VideoList[i]["Date"], " ")[0]
+            dateSplit = a.split(date, "-")
+            var dateFormatted = new Date(dateSplit[0], dateSplit[1]-1, dateSplit[2])
             var time = a.split(VideoList[i]["Date"], " ")[1]
             if (date in VideoListDict)
             {
@@ -39,29 +58,71 @@ var TikTokData = function(a)
 
             var dayOfWeek = dateFormatted.getDay()
             VideoListDayFreq[dayOfWeek] += 1
+
+            // calculate times spent watching
+            timeSplit = a.split(time, ":")
+            currTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2])
+
+            if (Math.abs(currTime - lastTime) > BREAK_INTERVAL)
+            {
+                newSession = true
+                sessionStart = lastTime
+                TimesOnline.push([sessionStart, sessionEnd])
+                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                console.log("sessionStart", sessionStart)
+                console.log("sessionEnd", sessionEnd)
+                console.log("TimesOnline", TimesOnline)
+
+                console.log("date", date)
+                console.log("datetime", VideoList[i]["Date"])
+                console.log("timeSplit", timeSplit)
+                console.log("currTime", currTime)
+                console.log("lastTime", lastTime)
+
+                if (date in TimesOnlineDict)
+                {
+                    TimesOnlineDict[date].push([sessionStart, sessionEnd])
+                }
+                else
+                {
+                    TimesOnlineDict[date] = [[sessionStart, sessionEnd]]
+                }
+
+                sessionEnd = currTime
+            }
+            else
+            {
+                newSession = false
+            }
+
+            lastTime = currTime
         }
-        console.log(VideoListDict)
-        console.log(VideoListDayFreq)
+
+        for (var i = 0; i < Object.keys(VideoListDict).length; i++)
+        {
+            if (Object.values(VideoListDict)[i].frequency > VideoListLargestFreq)
+            {
+                VideoListLargestFreq = Object.values(VideoListDict)[i].frequency;
+            }
+        }
+
+        console.log("VideoListDict", VideoListDict)
+        console.log("VideoListDayFreq", VideoListDayFreq)
+        console.log("TimesOnline", TimesOnline)
+        console.log("TimesOnlineDict", TimesOnlineDict)
 
         a.textFont('Courier New')
-        a.background(0, 0, 0)
-        WatchHistory()
     }
 
     a.draw = function()
     {
-        // a.background(66, 135, 245)
+        a.background(0, 0, 0)
 
-        // WatchHistory()
-    }
-
-    WatchHistory = function()
-    {
-        VideoWatchFreq()
         VideosPerDayOfWeek()
+        CalculateVideoWatchFreq()
     }
 
-    VideoWatchFreq = function()
+    CalculateVideoWatchFreq = function()
     {
         //--- VIDEOS WATCHED OVER TIME
         // drawing y axis
@@ -78,8 +139,6 @@ var TikTokData = function(a)
         var VideoListDictLength = Object.keys(VideoListDict).length
         var firstTime = Object.values(VideoListDict)[VideoListDictLength - 1].date.getTime()
         var lastTime = Object.values(VideoListDict)[0].date.getTime()
-
-        var largestFreq = 1205
         var maxHeight = 200
 
         for (var i = 0; i < VideoListDictLength; i++)
@@ -89,7 +148,7 @@ var TikTokData = function(a)
             a.fill(50, 168, 82)
             var width = (lineEnd.x - lineStart.x)/VideoListDictLength
             var xValue = a.map(Object.values(VideoListDict)[i].date.getTime(), firstTime, lastTime, lineStart.x + width/2, lineEnd.x - width/2)
-            var height = Object.values(VideoListDict)[i].frequency*(maxHeight/largestFreq)
+            var height = Object.values(VideoListDict)[i].frequency*(maxHeight/VideoListLargestFreq)
             a.rect(xValue - width/2, lineY - height, width, height)
             a.pop()
         }
