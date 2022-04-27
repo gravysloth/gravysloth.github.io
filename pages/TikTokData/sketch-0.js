@@ -1,8 +1,6 @@
 
 var TikTokData = function(a)
 {
-    let TIME_CHANGE = -7
-
     let data = {}
     let VideoList = {}
 
@@ -33,96 +31,71 @@ var TikTokData = function(a)
         
         VideoList = data["Activity"]["Video Browsing History"]["VideoList"]
         
+        var date
         var dateSplit = a.split(a.split(VideoList[0]["Date"], " ")[0], "-")
         var timeSplit = a.split(a.split(VideoList[0]["Date"], " ")[1], ":")
-        var trueDateTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2])
-        var dateString, lastDateString
-        var timeString
-        var lastTime = trueDateTime
+        var lastTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2])
+        var currTime
         var BREAK_INTERVAL = 600000
         
         var sessionStart = lastTime
         var sessionEnd = lastTime
 
         for (var i = 0; i < VideoList.length; i++)
-        //for (var i = 0; i < 2000; i++)
+        // for (var i = 0; i < 2000; i++)
         {
-            //-- temporary values
-            dateSplit = a.split(a.split(VideoList[i]["Date"], " ")[0], "-")
-            timeSplit = a.split(a.split(VideoList[i]["Date"], " ")[1], ":")
-            //-- Calculate true date
-            trueDateTime = new Date(
-                dateSplit[0], 
-                dateSplit[1] - 1, 
-                dateSplit[2], 
-                parseInt(timeSplit[0]) + TIME_CHANGE, 
-                timeSplit[1], 
-                timeSplit[2]
-            )
-            //-- Calculate true dateString and true dateSplit
-            dateString = trueDateTime.getFullYear() + "-"
-            if (trueDateTime.getMonth() + 1 < 10)
-            {
-                dateString += "0"
-            }
-            dateString += (trueDateTime.getMonth() + 1) + "-" + trueDateTime.getDate()
-            dateSplit = a.split(dateString, "-")
-
-            //-- Calculate true timeString and true timeSplit
-            timeString = ""
-            if (trueDateTime.getHours() < 10)
-            {
-                timeString += "0"
-            }
-            timeString += trueDateTime.getHours() + ":"
-            if (trueDateTime.getMinutes() < 10)
-            {
-                timeString += "0"
-            }
-            timeString += trueDateTime.getMinutes() + ":"
-            if (trueDateTime.getSeconds() < 10)
-            {
-                timeString += "0"
-            }
-            timeString += trueDateTime.getSeconds()
-            timeSplit = a.split(timeString, ":")
-            
+            date = a.split(VideoList[i]["Date"], " ")[0]
+            dateSplit = a.split(date, "-")
             var dateFormatted = new Date(dateSplit[0], dateSplit[1]-1, dateSplit[2])
-            if (dateString in VideoListDict)
+            var time = a.split(VideoList[i]["Date"], " ")[1]
+            if (date in VideoListDict)
             {
-                VideoListDict[dateString].addPair(timeString, VideoList[i]["VideoLink"])
+                VideoListDict[date].addPair(time, VideoList[i]["VideoLink"])
             }
             else
             {
-                VideoListDict[dateString] = new VideoListData(dateFormatted)
-                VideoListDict[dateString].addPair(timeString, VideoList[i]["VideoLink"])
+                VideoListDict[date] = new VideoListData(dateFormatted)
+                VideoListDict[date].addPair(time, VideoList[i]["VideoLink"])
             }
 
             var dayOfWeek = dateFormatted.getDay()
             VideoListDayFreq[dayOfWeek] += 1
 
             // calculate times spent watching
-            timeSplit = a.split(timeString, ":")
+            timeSplit = a.split(time, ":")
+            currTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2])
 
-            if (Math.abs(trueDateTime - lastTime) > BREAK_INTERVAL)
+            if (Math.abs(currTime - lastTime) > BREAK_INTERVAL)
             {
                 TimesOnlineCount++
                 sessionStart = lastTime
                 TimesOnline.push([sessionStart, sessionEnd])
+                // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                // console.log("sessionStart", sessionStart)
+                // console.log("sessionEnd", sessionEnd)
+                // console.log("TimesOnline", TimesOnline)
 
-                if (lastDateString in TimesOnlineDict)
+                // console.log("date", date)
+                // console.log("datetime", VideoList[i]["Date"])
+                // console.log("timeSplit", timeSplit)
+                // console.log("currTime", currTime)
+                // console.log("lastTime", lastTime)
+
+                var lastDate = a.split(VideoList[i-1]["Date"], " ")[0]
+
+                if (lastDate in TimesOnlineDict)
                 {
-                    TimesOnlineDict[lastDateString].push([sessionStart, sessionEnd])
+                    TimesOnlineDict[lastDate].push([sessionStart, sessionEnd])
                 }
                 else
                 {
-                    TimesOnlineDict[lastDateString] = [[sessionStart, sessionEnd]]
+                    TimesOnlineDict[lastDate] = [[sessionStart, sessionEnd]]
                 }
 
-                sessionEnd = trueDateTime
+                sessionEnd = currTime
             }
-            lastDateString = dateString
-            lastTime = trueDateTime
+
+            lastTime = currTime
         }
 
         for (var i = 0; i < Object.keys(VideoListDict).length; i++)
@@ -148,9 +121,6 @@ var TikTokData = function(a)
         console.log("TimesOnlineDict", TimesOnlineDict)
         console.log("VideoListLargestFreq", VideoListLargestFreq)
         console.log("VideoListDayLargestFreq", VideoListDayLargestFreq)
-
-        var quick = new Date(2020, 0, 1, -1, 32, 45)
-        console.log(quick)
     }
 
     a.draw = function()
