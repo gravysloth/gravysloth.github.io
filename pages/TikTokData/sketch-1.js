@@ -49,13 +49,14 @@ var TikTokData = function(a)
         console.log(OverallStatsDesc)
 
         console.log("VideoListDict", VideoListDict)
+        console.log("204", Object.values(VideoListDict)[204])
         // console.log("VideoListDayFreq", VideoListDayFreq)
         // console.log("TimesOnlineCount", TimesOnlineCount)
         // console.log("TimesOnlineDict", TimesOnlineDict)
         // console.log("VideoListLargestFreq", VideoListLargestFreq)
         // console.log("VideoListDayLargestFreq", Video  ListDayLargestFreq)
         // console.log("TotalTimeSpent", TotalTimeSpent)
-        console.log("LikeListDict", LikeListDict)
+        // console.log("LikeListDict", LikeListDict)
     }
 
     VideoListCalculations = function()
@@ -66,16 +67,15 @@ var TikTokData = function(a)
         var trueDateTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2])
         var dateString, lastDateString
         var timeString
-        var lastDateTime = trueDateTime
-
+        var lastTime = trueDateTime
         var BREAK_INTERVAL = 600000
         
-        var sessionStart = lastDateTime
-        var sessionEnd = lastDateTime
+        var sessionStart = lastTime
+        var sessionEnd = lastTime
         var sessionDuration
 
         for (var i = 0; i < VideoList.length; i++)
-        //for (var i = 0; i < 100; i++)
+        //for (var i = 0; i < 1000; i++)
         {
             //-- temporary values
             dateSplit = a.split(a.split(VideoList[i]["Date"], " ")[0], "-")
@@ -121,33 +121,7 @@ var TikTokData = function(a)
             }
             timeString += trueDateTime.getSeconds()
             timeSplit = a.split(timeString, ":")
-
-            //-- Add gaps to VideoListDict
-            if (Math.abs(trueDateTime - lastDateTime) > 1000 * 60 * 60 * 24)
-            {
-                var gapDate = new Date(lastDateTime)
-                gapDate.setDate(gapDate.getDate() - 1)
-                gapDate.setHours(0)
-                gapDate.setMinutes(0)
-                gapDate.setSeconds(0)
-                var trueDateTimeCompare = new Date(trueDateTime)
-                trueDateTimeCompare.setHours(0)
-                trueDateTimeCompare.setMinutes(0)
-                trueDateTimeCompare.setSeconds(0)
-                var gapDateString, gapDateFormatted
-                while (Math.abs(gapDate - trueDateTimeCompare) >= 1000 * 60 * 60 * 24)
-                {
-                    gapDateString = a.split(DateTimeToString(gapDate), " ")[0]
-                    gapDateFormatted = new Date(gapDate)
-                    gapDateFormatted.setHours(0)
-                    gapDateFormatted.setMinutes(0)
-                    gapDateFormatted.setSeconds(0)
-                    VideoListDict[gapDateString] = new VideoListData(gapDateFormatted)
-
-                    gapDate.setDate(gapDate.getDate() - 1)
-                }
-            }
-            //-- Add to VideoListDict
+            
             var dateFormatted = new Date(dateSplit[0], dateSplit[1]-1, dateSplit[2])
             if (dateString in VideoListDict)
             {
@@ -165,10 +139,10 @@ var TikTokData = function(a)
             //-- Calculate session times spent watching
             timeSplit = a.split(timeString, ":")
 
-            if (Math.abs(trueDateTime - lastDateTime) > BREAK_INTERVAL)
+            if (Math.abs(trueDateTime - lastTime) > BREAK_INTERVAL)
             {
                 TimesOnlineCount++
-                sessionStart = lastDateTime
+                sessionStart = lastTime
 
                 if (lastDateString in TimesOnlineDict)
                 {
@@ -184,12 +158,10 @@ var TikTokData = function(a)
 
                 sessionEnd = trueDateTime
             }
-
             lastDateString = dateString
-            lastDateTime = trueDateTime
+            lastTime = trueDateTime
         }
 
-        // Calculate largest values
         for (var i = 0; i < Object.keys(VideoListDict).length; i++)
         {
             if (Object.values(VideoListDict)[i].frequency > VideoListLargestFreq)
@@ -212,7 +184,6 @@ var TikTokData = function(a)
             }
         }
     }
-    //2020-10-29
 
     LikeListCalculations = function()
     {
@@ -220,7 +191,7 @@ var TikTokData = function(a)
 
         var trueDate, dateTimeString, dateString, timeString
         for (var i = 0; i < LikeList.length; i++)
-        //for (var i = LikeList.length - 10; i < LikeList.length; i++)
+        //for (var i = 0; i < 10; i++)
         {
             trueDate = ShiftStringDateTime(LikeList[i]["Date"], TIME_CHANGE)
             dateTimeString = DateTimeToString(trueDate)
@@ -235,17 +206,6 @@ var TikTokData = function(a)
             {
                 LikeListDict[dateString] = [trueDate]
             }
-
-            if (dateString in VideoListDict)
-            {
-                VideoListDict[dateString].likes += 1
-            }
-        }
-
-        // Calculate like percent
-        for (var i = 0; i < Object.keys(VideoListDict).length; i++)
-        {
-            Object.values(VideoListDict)[i].likePercent = Object.values(VideoListDict)[i].likes / Object.values(VideoListDict)[i].frequency
         }
     }
 
@@ -255,7 +215,7 @@ var TikTokData = function(a)
         var timeSplit = a.split(a.split(dateTimeString, " ")[1], ":")
         var trueDate = new Date (
             dateSplit[0],
-            parseInt(dateSplit[1]) - 1,
+            parseInt(dateSplit[1]) + 1,
             dateSplit[2],
             parseInt(timeSplit[0]) + shift,
             timeSplit[1],
@@ -318,14 +278,14 @@ var TikTokData = function(a)
             CalculateLikeTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
         }
 
+        DrawTimeSpentEachDay()
+        CalculateVideoWatchFreq()
+
         a.push()
         a.textAlign(a.CENTER, a.BASELINE)
         a.fill(255)
         a.text("Usage Over Time", (VideoWatchDesc.lineEndX - VideoWatchDesc.lineStartX) / 2 + VideoWatchDesc.lineStartX, VideoWatchDesc.lineY - VideoWatchDesc.maxHeight - 15)
         a.pop()
-
-        DrawTimeSpentEachDay()
-        CalculateVideoWatchFreq()
     }
 
     var OverallStatsDesc =
@@ -364,7 +324,7 @@ var TikTokData = function(a)
         //-- total videos liked
         a.text(LikeList.length, OverallStatsDesc.x, OverallStatsDesc.y + OverallStatsDesc.spacing * 2)
         //-- videos liked %
-        var percent = parseInt(LikeList.length / VideoList.length * 100 * 100)/100
+        var percent = parseInt(LikeList.length / VideoList.length * 1000)/100
         a.text(percent + "%", OverallStatsDesc.x, OverallStatsDesc.y + OverallStatsDesc.spacing * 3)
         //-- time spent
         var TTScopy = TotalTimeSpent
@@ -505,16 +465,21 @@ var TikTokData = function(a)
         lineEndX : 960,
         lineY : 575,
         textPadding : 2,
-        maxHeight : 180,
-        linePointNum : 25
+        maxHeight : 180
     }
 
     CalculateVideoWatchFreq = function()
     {
         //--- VIDEOS WATCHED OVER TIME
+        // drawing y axis
+        a.push()
+        a.stroke(252, 186, 3)
+        a.strokeWeight(2)
         let lineY = VideoWatchDesc.lineY
         let lineStart = a.createVector(VideoWatchDesc.lineStartX, lineY)
         let lineEnd = a.createVector(VideoWatchDesc.lineEndX, lineY)
+        // a.line(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y)
+        a.pop()
 
         // draw the bars
         var VideoListDictLength = Object.keys(VideoListDict).length
@@ -525,7 +490,7 @@ var TikTokData = function(a)
         var width = (lineEnd.x - lineStart.x)/numOfDays
 
         // variables for line
-        var averageInterval = parseInt(VideoListDictLength / VideoWatchDesc.linePointNum)
+        var averageInterval = parseInt(VideoListDictLength / 10)
         var averageTotal = 0
         var average
         var pointX, pointY
@@ -545,18 +510,6 @@ var TikTokData = function(a)
             var xValue = a.map(Object.values(VideoListDict)[i].date.getTime(), firstTime, lastTime, lineStart.x + width/2, lineEnd.x - width/2)
             var height = Object.values(VideoListDict)[i].frequency*(maxHeight/VideoListLargestFreq)
             a.rect(xValue - width/2, lineY - height, width, height)
-            
-            // draw like ratio
-            // var dateKey = Object.keys(VideoListDict)[i]
-            // if (dateKey in LikeListDict)
-            // {
-            //     a.push()
-            //     a.stroke(255, 0, 0)
-            //     a.strokeWeight(3)
-            //     var yLikeRatioValue = lineY - Object.values(VideoListDict)[i].likePercent * maxHeight
-            //     a.point(xValue, yLikeRatioValue)
-            //     a.pop()
-            // }
 
             // year markers
             if (lastYear != Object.values(VideoListDict)[i].date.getFullYear() && Object.values(VideoListDict)[i].date != "Invalid Date" && !isNaN(lastYear))
@@ -587,13 +540,12 @@ var TikTokData = function(a)
 
             // draw line
             averageTotal += Object.values(VideoListDict)[i].frequency
-            if (i == VideoListDictLength - 1)
+            if (VideoListDictLength - i == parseInt(averageInterval / 2))
             {
+                average = averageTotal / (averageInterval / 2)
                 pointX = lineStart.x
+                pointY = lineY - average*(maxHeight/VideoListLargestFreq)
                 a.curveVertex(pointX, pointY)
-                a.curveVertex(pointX, pointY)
-
-                averageTotal = 0
             }
             if (i == parseInt(averageInterval / 2))
             {
@@ -602,8 +554,6 @@ var TikTokData = function(a)
                 pointY = lineY - average*(maxHeight/VideoListLargestFreq)
                 a.curveVertex(pointX, pointY)
                 a.curveVertex(pointX, pointY)
-
-                averageTotal = 0
             }
             if (i%averageInterval == 0 && i != 0)
             {
@@ -628,17 +578,17 @@ var TikTokData = function(a)
         a.pop()
 
         // draw labels
-        // a.push()
-        // a.fill(255)
-        // a.textAlign(a.RIGHT, a.TOP)
-        // var date = Object.values(VideoListDict)[0].date
-        // var dateString = a.split(date.toString(), " ")[1] + " " + a.split(date.toString(), " ")[3]
-        // a.text(dateString, lineEnd.x, lineY + VideoWatchDesc.textPadding)
-        // a.textAlign(a.LEFT, a.TOP)
-        // date = Object.values(VideoListDict)[VideoListDictLength - 1].date
-        // dateString = a.split(date.toString(), " ")[1] + " " + a.split(date.toString(), " ")[3]
-        // a.text(dateString, lineStart.x, lineY + VideoWatchDesc.textPadding)
-        // a.pop()
+        a.push()
+        a.fill(255)
+        a.textAlign(a.RIGHT, a.TOP)
+        var date = Object.values(VideoListDict)[0].date
+        var dateString = a.split(date.toString(), " ")[1] + " " + a.split(date.toString(), " ")[3]
+        a.text(dateString, lineEnd.x, lineY + VideoWatchDesc.textPadding)
+        a.textAlign(a.LEFT, a.TOP)
+        date = Object.values(VideoListDict)[VideoListDictLength - 1].date
+        dateString = a.split(date.toString(), " ")[1] + " " + a.split(date.toString(), " ")[3]
+        a.text(dateString, lineStart.x, lineY + VideoWatchDesc.textPadding)
+        a.pop()
 
         // draw month markers
         for (var i = 0; i < monthMarkers.length; i++)
@@ -665,9 +615,15 @@ var TikTokData = function(a)
     DrawTimeSpentEachDay = function()
     {
         //--- VIDEOS WATCHED OVER TIME
+        // drawing y axis
+        a.push()
+        a.stroke(252, 186, 3)
+        a.strokeWeight(2)
         let lineY = VideoWatchDesc.lineY
-        let lineStart = a.createVector(VideoWatchDesc.lineStartX, lineY)
-        let lineEnd = a.createVector(VideoWatchDesc.lineEndX, lineY)
+        let lineStart = a.createVector(40, lineY)
+        let lineEnd = a.createVector(a.width - 40, lineY)
+        // a.line(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y)
+        a.pop()
 
         // draw the bars
         var VideoListDictLength = Object.keys(VideoListDict).length
@@ -682,7 +638,7 @@ var TikTokData = function(a)
         a.fill(106, 161, 95)
 
         // variables for line
-        var averageInterval = parseInt(VideoListDictLength / VideoWatchDesc.linePointNum)
+        var averageInterval = parseInt(VideoListDictLength / 10)
         var averageTotal = 0
         var average
         var pointX, pointY
@@ -709,13 +665,12 @@ var TikTokData = function(a)
 
             // draw line
             averageTotal += Object.values(VideoListDict)[i].timeSpent
-            if (i == VideoListDictLength - 1)
+            if (VideoListDictLength - i == parseInt(averageInterval / 2))
             {
+                average = averageTotal / (averageInterval / 2)
                 pointX = lineStart.x
+                pointY = lineY + average*(maxHeight/VideoListLongestTimeSpent)
                 a.curveVertex(pointX, pointY)
-                a.curveVertex(pointX, pointY)
-
-                averageTotal = 0
             }
             if (i == parseInt(averageInterval / 2))
             {
@@ -724,8 +679,6 @@ var TikTokData = function(a)
                 pointY = lineY + average*(maxHeight/VideoListLongestTimeSpent)
                 a.curveVertex(pointX, pointY)
                 a.curveVertex(pointX, pointY)
-
-                averageTotal = 0
             }
             if (i%averageInterval == 0 && i != 0)
             {
@@ -823,8 +776,6 @@ var TikTokData = function(a)
             this.frequency = 0
             this.timeLinkDict = {}
             this.timeSpent = 0
-            this.likes = 0
-            this.likePercent = 0
         }
 
         addPair = function(time, link)
