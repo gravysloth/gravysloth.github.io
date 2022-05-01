@@ -4,6 +4,7 @@ var TikTokData = function(a)
     let PERSON = "andrea"
     let TIME_CHANGE = -7
     let TEXT_SIZE = 12
+    let MARGIN = 40
 
     let data = {}
     let VideoList = {}
@@ -32,6 +33,7 @@ var TikTokData = function(a)
 
     a.setup = function()
     {
+        a.pixelDensity(2)
         var canvas = a.createCanvas(1000, 800)
         canvas.parent("sketch")
         a.frameRate(30)
@@ -44,13 +46,15 @@ var TikTokData = function(a)
         
         LikeListCalculations()
 
+        console.log(OverallStatsDesc)
+
         console.log("VideoListDict", VideoListDict)
         console.log("204", Object.values(VideoListDict)[204])
         // console.log("VideoListDayFreq", VideoListDayFreq)
         // console.log("TimesOnlineCount", TimesOnlineCount)
         // console.log("TimesOnlineDict", TimesOnlineDict)
         // console.log("VideoListLargestFreq", VideoListLargestFreq)
-        // console.log("VideoListDayLargestFreq", VideoListDayLargestFreq)
+        // console.log("VideoListDayLargestFreq", Video  ListDayLargestFreq)
         // console.log("TotalTimeSpent", TotalTimeSpent)
         // console.log("LikeListDict", LikeListDict)
     }
@@ -284,18 +288,20 @@ var TikTokData = function(a)
         a.pop()
     }
 
-    OverallStatsDesc =
+    var OverallStatsDesc =
     {
-        x : 40,
-        y : 40,
+        x : MARGIN,
+        y : MARGIN,
         width : 200,
-        height : 200,
-        spacing : 40
+        height :  200,
+        spacing : 40,
+        fontSize : 12
     }
 
     OverallStats = function()
     {
         a.push()
+        a.textSize(OverallStatsDesc.fontSize)
         a.fill(255)
         a.textAlign(a.CENTER, a.BASELINE)
         a.text("Overall Stats", OverallStatsDesc.x + OverallStatsDesc.width/2, OverallStatsDesc.y)
@@ -307,9 +313,10 @@ var TikTokData = function(a)
         a.text("% videos liked", OverallStatsDesc.x + OverallStatsDesc.width, OverallStatsDesc.y + OverallStatsDesc.spacing * 3)
         a.text("time spent", OverallStatsDesc.x + OverallStatsDesc.width, OverallStatsDesc.y + OverallStatsDesc.spacing * 4)
         a.text("avg minutes a day", OverallStatsDesc.x + OverallStatsDesc.width, OverallStatsDesc.y + OverallStatsDesc.spacing * 5)
-
+        a.pop()
         
         a.push()
+        a.textSize(OverallStatsDesc.fontSize)
         a.fill(176, 215, 255)
         a.textAlign(a.LEFT, a.BASELINE)
         //-- total videos watched
@@ -385,8 +392,6 @@ var TikTokData = function(a)
     DrawSessionTimesPeripherals = function()
     {
         a.push()
-        a.stroke(255, 255, 255, 50)
-        a.strokeWeight(2)
         a.textAlign(a.CENTER, a.TOP)
         a.fill(255)
         var x
@@ -411,6 +416,7 @@ var TikTokData = function(a)
 
         // drawing the labels
         a.push()
+        a.noStroke()
         a.textAlign(a.CENTER, a.CENTER)
         a.fill(255)
         a.text(Days[inDay], lineStart.x - 15, lineY)
