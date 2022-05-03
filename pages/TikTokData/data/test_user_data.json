@@ -1,0 +1,49 @@
+{
+  "Activity": {
+    "Like List": {
+      "ItemFavoriteList": [
+        {
+          "Date": "2022-04-20 19:22:47",
+          "VideoLink": "https://www.tiktokv.com/share/video/7088690321839738154/"
+        }
+      ]
+    },
+    "Video Browsing History": {
+        "VideoList": [
+        {
+          "Date": "2022-04-20 20:20:08",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-20 20:15:26",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-20 00:04:26",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-20 00:02:26",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-20 00:00:22",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-19 23:58:66",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-19 23:56:44",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        },
+        {
+          "Date": "2022-04-19 23:54:22",
+          "VideoLink": "https://www.tiktokv.com/share/video/6930354218037513477/"
+        }
+        ]
+    }
+  }
+}
+

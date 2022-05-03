@@ -1,9 +1,8 @@
 
 var TikTokData = function(a)
 {
-    let PERSON = "test"
-    // let TIME_CHANGE = -7
-    let TIME_CHANGE = 0
+    let PERSON = "andrea"
+    let TIME_CHANGE = -7
     let TEXT_SIZE = 12
     let MARGIN = 40
 
@@ -69,14 +68,12 @@ var TikTokData = function(a)
 
         var BREAK_INTERVAL = 600000
         
-        var sessionStart = trueDateTime
-        var sessionEnd = trueDateTime
+        var sessionStart = lastDateTime
+        var sessionEnd = lastDateTime
         var sessionDuration
 
-        var dailySessionStart = trueDateTime
-        var dailySessionEnd = trueDateTime 
-
         for (var i = 0; i < VideoList.length; i++)
+        //for (var i = 0; i < 100; i++)
         {
             //-- temporary values
             dateSplit = a.split(a.split(VideoList[i]["Date"], " ")[0], "-")
@@ -159,74 +156,43 @@ var TikTokData = function(a)
                 // VideoListDict[dateString].addTime(sessionDuration)
 
                 sessionEnd = trueDateTime
-
-                //-- Daily session calculation
-                dailySessionStart = lastDateTime
-                if (lastDateString in VideoListDict)
-                {
-                    VideoListDict[lastDateString].addSession(dailySessionStart, dailySessionEnd)
-                }
-                
-                console.log("BREAK")
-                console.log("dailySessionStart", dailySessionStart)
-                console.log("dailySessionEnd", dailySessionEnd)
-                console.log("added to", lastDateString)
-
-                dailySessionEnd = trueDateTime
             }
-
-            if (lastDateString != dateString && lastDateString != undefined && Math.abs(trueDateTime - lastDateTime) < BREAK_INTERVAL)
-            {
-                //-- Daily session calculation
-                dailySessionStart = lastDateTime
-                
-                VideoListDict[lastDateString].addSession(dailySessionStart, dailySessionEnd)
-                
-                console.log("NEW DAY BREAK")
-                console.log("dailySessionStart", dailySessionStart)
-                console.log("dailySessionEnd", dailySessionEnd)
-                console.log("added to", lastDateString)
-
-                dailySessionEnd = trueDateTime
-            }
-
-            console.log("trueDateTime", trueDateTime)
 
             lastDateString = dateString
             lastDateTime = trueDateTime
         }
 
         // Calculate sessions per day
-        // for (var i = 0; i < Object.keys(VideoListDict).length; i++)
-        // // for (var i = 0; i < 1; i++)
-        // {
-        //     var currTime = new Date(Object.keys(Object.values(VideoListDict)[i].timeLinkDict)[0])
-        //     var lastTime = new Date(currTime)
-        //     var sessionStart = currTime
-        //     var sessionEnd = currTime 
-        //     for (var t = 0; t < Object.keys(Object.values(VideoListDict)[i].timeLinkDict).length; t++)
-        //     {
-        //         currTime = new Date(Object.keys(Object.values(VideoListDict)[i].timeLinkDict)[t])
+        for (var i = 0; i < Object.keys(VideoListDict).length; i++)
+        // for (var i = 0; i < 1; i++)
+        {
+            var currTime = new Date(Object.keys(Object.values(VideoListDict)[i].timeLinkDict)[0])
+            var lastTime = new Date(currTime)
+            var sessionStart = currTime
+            var sessionEnd = currTime 
+            for (var t = 0; t < Object.keys(Object.values(VideoListDict)[i].timeLinkDict).length; t++)
+            {
+                currTime = new Date(Object.keys(Object.values(VideoListDict)[i].timeLinkDict)[t])
 
-        //         if (Math.abs(lastTime - currTime) > BREAK_INTERVAL)
-        //         {
-        //             sessionStart = lastTime
-        //             Object.values(VideoListDict)[i].addSession(sessionStart, sessionEnd)
+                if (Math.abs(lastTime - currTime) > BREAK_INTERVAL)
+                {
+                    sessionStart = lastTime
+                    Object.values(VideoListDict)[i].addSession(sessionStart, sessionEnd)
 
-        //             sessionEnd = currTime
-        //         }
-        //         if (t == Object.keys(Object.values(VideoListDict)[i].timeLinkDict).length - 1)
-        //         {
-        //             sessionStart = lastTime
-        //             Object.values(VideoListDict)[i].addSession(sessionStart, sessionEnd)
+                    sessionEnd = currTime
+                }
+                if (t == Object.keys(Object.values(VideoListDict)[i].timeLinkDict).length - 1)
+                {
+                    sessionStart = lastTime
+                    Object.values(VideoListDict)[i].addSession(sessionStart, sessionEnd)
 
-        //             sessionEnd = currTime
-        //         }
+                    sessionEnd = currTime
+                }
 
-        //         lastTime = new Date(currTime)
-        //     }
-        // }
-        // console.log("toot")
+                lastTime = new Date(currTime)
+            }
+        }
+        console.log("toot")
 
         // Calculate largest values
         for (var i = 0; i < Object.keys(VideoListDict).length; i++)
@@ -451,8 +417,7 @@ var TikTokData = function(a)
         lineEndX : 960,
         margin : 80,
         spacing : 40,
-        // transparency : 0.03,
-        transparency : 0.5,
+        transparency : 0.03,
         likeTransparency : 2,
         likePadding : 10,
         dotSize : 5
