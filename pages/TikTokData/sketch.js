@@ -1,9 +1,9 @@
 
 var TikTokData = function(a)
 {
-    let PERSON = "test"
-    // let TIME_CHANGE = -7
-    let TIME_CHANGE = 0
+    let PERSON = "shreya"
+    let TIME_CHANGE = -7
+    // let TIME_CHANGE = 0
     let TEXT_SIZE = 12
     let MARGIN = 40
 
@@ -166,11 +166,6 @@ var TikTokData = function(a)
                 {
                     VideoListDict[lastDateString].addSession(dailySessionStart, dailySessionEnd)
                 }
-                
-                console.log("BREAK")
-                console.log("dailySessionStart", dailySessionStart)
-                console.log("dailySessionEnd", dailySessionEnd)
-                console.log("added to", lastDateString)
 
                 dailySessionEnd = trueDateTime
             }
@@ -181,52 +176,13 @@ var TikTokData = function(a)
                 dailySessionStart = lastDateTime
                 
                 VideoListDict[lastDateString].addSession(dailySessionStart, dailySessionEnd)
-                
-                console.log("NEW DAY BREAK")
-                console.log("dailySessionStart", dailySessionStart)
-                console.log("dailySessionEnd", dailySessionEnd)
-                console.log("added to", lastDateString)
 
                 dailySessionEnd = trueDateTime
             }
 
-            console.log("trueDateTime", trueDateTime)
-
             lastDateString = dateString
             lastDateTime = trueDateTime
         }
-
-        // Calculate sessions per day
-        // for (var i = 0; i < Object.keys(VideoListDict).length; i++)
-        // // for (var i = 0; i < 1; i++)
-        // {
-        //     var currTime = new Date(Object.keys(Object.values(VideoListDict)[i].timeLinkDict)[0])
-        //     var lastTime = new Date(currTime)
-        //     var sessionStart = currTime
-        //     var sessionEnd = currTime 
-        //     for (var t = 0; t < Object.keys(Object.values(VideoListDict)[i].timeLinkDict).length; t++)
-        //     {
-        //         currTime = new Date(Object.keys(Object.values(VideoListDict)[i].timeLinkDict)[t])
-
-        //         if (Math.abs(lastTime - currTime) > BREAK_INTERVAL)
-        //         {
-        //             sessionStart = lastTime
-        //             Object.values(VideoListDict)[i].addSession(sessionStart, sessionEnd)
-
-        //             sessionEnd = currTime
-        //         }
-        //         if (t == Object.keys(Object.values(VideoListDict)[i].timeLinkDict).length - 1)
-        //         {
-        //             sessionStart = lastTime
-        //             Object.values(VideoListDict)[i].addSession(sessionStart, sessionEnd)
-
-        //             sessionEnd = currTime
-        //         }
-
-        //         lastTime = new Date(currTime)
-        //     }
-        // }
-        // console.log("toot")
 
         // Calculate largest values
         for (var i = 0; i < Object.keys(VideoListDict).length; i++)
@@ -370,7 +326,7 @@ var TikTokData = function(a)
         DrawSessionTimesPeripherals()
         for (var i = 0; i < 7; i++)
         {
-            CalculateSessionTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
+            DrawSessionTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
 
             CalculateLikeTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
         }
@@ -451,8 +407,8 @@ var TikTokData = function(a)
         lineEndX : 960,
         margin : 80,
         spacing : 40,
-        // transparency : 0.03,
-        transparency : 0.5,
+        transparency : 0.03,
+        // transparency : 0.5,
         likeTransparency : 2,
         likePadding : 10,
         dotSize : 5
@@ -501,7 +457,7 @@ var TikTokData = function(a)
         a.pop()
     }
 
-    CalculateSessionTimes = function(inDay, lineY)
+    DrawSessionTimes = function(inDay, lineY)
     {
         // drawing y axis
         a.push()
@@ -520,7 +476,7 @@ var TikTokData = function(a)
         a.text(Days[inDay], lineStart.x - 15, lineY)
         a.pop()
 
-        var TimesOnlineDictLength = Object.keys(TimesOnlineDict).length
+        var VideoListDictLength = Object.keys(VideoListDict).length
 
         a.push()
         a.stroke(188, 145, 255, 255*SessionTimesDesc.transparency)
@@ -529,13 +485,13 @@ var TikTokData = function(a)
         var date
         var day
         var timesOnlineDay
-        for (var i = 0; i < TimesOnlineDictLength; i++)
+        for (var i = 0; i < VideoListDictLength; i++)
         {
-            date = a.split(Object.keys(TimesOnlineDict)[i], "-")
+            date = a.split(Object.keys(VideoListDict)[i], "-")
             day = new Date(date[0], date[1] - 1, date[2]).getDay()
             if (day == inDay)
             {
-                timesOnlineDay = Object.values(TimesOnlineDict)[i]
+                timesOnlineDay = Object.values(VideoListDict)[i].sessions
 
                 var session
                 var start, end
@@ -842,7 +798,6 @@ var TikTokData = function(a)
         var maxHeight = 60
         var bottomSpacing = 10
         var strokeWeight = 10
-        a.beginShape()
         for (var i = 0; i < VideoListDayFreq.length; i++)
         {
             // Draw bars
@@ -863,26 +818,8 @@ var TikTokData = function(a)
             a.text(Days[i], xValue, lineY)
             a.pop()
 
-            // Draw line
-            if (i == 0)
-            {
-                xValue -= strokeWeight/2
-                a.curveVertex(xValue, lineY - height - bottomSpacing)
-            }
-            else if (i == VideoListDayFreq.length - 1)
-            {
-                xValue += strokeWeight/2
-                a.curveVertex(xValue, lineY - height - bottomSpacing)
-            }
-            a.curveVertex(xValue, lineY - height - bottomSpacing)
             a.pop()
         }
-        a.push()
-        a.noFill()
-        a.stroke(96, 142, 191)
-        a.strokeWeight(2)
-        a.endShape()
-        a.pop()
     }
 
     class VideoListData
