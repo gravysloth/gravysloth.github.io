@@ -343,7 +343,7 @@ var TikTokData = function(a)
         a.text("Usage Over Time", (VideoWatchDesc.lineEndX - VideoWatchDesc.lineStartX) / 2 + VideoWatchDesc.lineStartX, VideoWatchDesc.lineY - VideoWatchDesc.maxHeight - 15)
         a.pop()
 
-        CalculateTimeSpentEachDay()
+        DrawTimeSpentEachDay()
         CalculateVideoWatchFreq()
     }
 
@@ -672,7 +672,7 @@ var TikTokData = function(a)
         a.pop()
     }
 
-    CalculateTimeSpentEachDay = function()
+    DrawTimeSpentEachDay = function()
     {
         //--- VIDEOS WATCHED OVER TIME
         let lineY = VideoWatchDesc.lineY
