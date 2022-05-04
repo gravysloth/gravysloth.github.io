@@ -364,7 +364,7 @@ var TikTokData = function(a)
 
     a.mousePressed = function()
     {
-        // a.loop()
+        a.loop()
     }
 
     a.mouseReleased = function()
@@ -558,7 +558,7 @@ var TikTokData = function(a)
         a.pop()
     }
 
-    var SessionTimesLines = [[],[],[],[],[],[],[]]
+    var SessionTimesLines = []
 
     DrawSessionTimes = function(inDay, lineY)
     {
@@ -596,7 +596,6 @@ var TikTokData = function(a)
             day = new Date(date[0], date[1] - 1, date[2]).getDay()
             if (day == inDay)
             {
-                var dayLines = []
                 timesOnlineDay = Object.values(VideoListDict)[i].sessions
 
                 var session
@@ -607,13 +606,10 @@ var TikTokData = function(a)
                     start = a.map(TimeInMilliseconds(session[0]), 0, 86400000, lineStart.x, lineEnd.x)
                     end = a.map(TimeInMilliseconds(session[1]), 0, 86400000, lineStart.x, lineEnd.x)
                     a.line(start, lineY, end, lineY)
-                    dayLines.push([start, lineY, end, lineY])
                 }
-                SessionTimesLines[inDay].push(dayLines)
             }
         }
         a.pop()
-        console.log(SessionTimesLines)
     }
 
     TimeInMilliseconds = function(Time)
