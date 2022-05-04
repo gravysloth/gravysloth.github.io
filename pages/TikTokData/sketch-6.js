@@ -61,8 +61,10 @@ var TikTokData = function(a)
         //-- Calculate drawables        
         CalculateVideoWatchFreq()
         CalculateTimeSpentEachDay()
-        
-        CalculateSessionTimes()
+        for (var i = 0; i < 7; i++)
+        {
+            CalculateSessionTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
+        }
     }
 
     VideoListCalculations = function()
@@ -329,10 +331,10 @@ var TikTokData = function(a)
         a.background(0, 0, 0)
 
         OverallStats()
-        console.log("OverallStats", a.millis())
+        // console.log("OverallStats", a.millis())
 
         VideosPerDayOfWeek()
-        console.log("VideosPerDayOfWeek", a.millis())
+        // console.log("VideosPerDayOfWeek", a.millis())
         
         a.push()
         a.textAlign(a.CENTER, a.TOP)
@@ -340,13 +342,13 @@ var TikTokData = function(a)
         a.text("When I'm Online", (SessionTimesDesc.lineEndX - SessionTimesDesc.lineStartX) / 2 + SessionTimesDesc.lineStartX, SessionTimesDesc.margin - SessionTimesDesc.spacing)
         a.pop()
         DrawSessionTimesPeripherals()
-        console.log("DrawSessionTimesPeripherals", a.millis())
+        // console.log("DrawSessionTimesPeripherals", a.millis())
         for (var i = 0; i < 7; i++)
         {
             CalculateLikeTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
         }
         DrawSessionTimes()
-        console.log("DrawSessionTimes & CalculateLikeTimes", a.millis())
+        // console.log("DrawSessionTimes & CalculateLikeTimes", a.millis())
 
         a.push()
         a.textAlign(a.CENTER, a.BASELINE)
@@ -355,17 +357,17 @@ var TikTokData = function(a)
         a.pop()
 
         DrawTimeSpentEachDay()
-        console.log("DrawTimeSpentEachDay", a.millis())
+        // console.log("DrawTimeSpentEachDay", a.millis())
         DrawVideoWatchFreq()
-        console.log("DrawVideoWatchFreq", a.millis())
+        // console.log("DrawVideoWatchFreq", a.millis())
 
         SliderInteraction()
-        console.log("SliderInteraction", a.millis())
+        // console.log("SliderInteraction", a.millis())
     }
 
     a.mousePressed = function()
     {
-        a.loop()
+        // a.loop()
     }
 
     a.mouseReleased = function()
@@ -544,11 +546,6 @@ var TikTokData = function(a)
         }
         a.pop()
     }
-    
-    DrawLikeTimes = function()
-    {
-        
-    }
 
     DrawSessionTimesPeripherals = function()
     {
@@ -566,58 +563,67 @@ var TikTokData = function(a)
 
     var SessionTimesLines = [[],[],[],[],[],[],[]]
 
-    CalculateSessionTimes = function()
+    CalculateSessionTimes = function(inDay, lineY)
     {
-        let lineStartX = SessionTimesDesc.lineStartX
-        let lineEndX = SessionTimesDesc.lineEndX
+        // drawing y axis
+        a.push()
+        a.stroke(252, 186, 3)
+        a.strokeWeight(2)
+        let lineStart = a.createVector(SessionTimesDesc.lineStartX, lineY)
+        let lineEnd = a.createVector(SessionTimesDesc.lineEndX, lineY)
+        // a.line(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y)
+        a.pop()
 
         SessionTimesDesc.transparency = 15 * 10000000/TotalTimeSpent
 
-        var VideoListDictLength = Object.keys(VideoListDict).length
-
-        var date
-        var day
-        var timesOnlineDay
-        var lineY
-        for (var i = 0; i < VideoListDictLength; i++)
-        {
-            date = a.split(Object.keys(VideoListDict)[i], "-")
-            day = new Date(date[0], date[1] - 1, date[2]).getDay()
-            lineY = SessionTimesDesc.margin + SessionTimesDesc.spacing*day
-            var dayLines = []
-            timesOnlineDay = Object.values(VideoListDict)[i].sessions
-
-            var session
-            var start, end
-            for (var t = 0; t < timesOnlineDay.length; t++)
-            {
-                session = timesOnlineDay[t]
-                start = a.map(TimeInMilliseconds(session[0]), 0, 86400000, lineStartX, lineEndX)
-                end = a.map(TimeInMilliseconds(session[1]), 0, 86400000, lineStartX, lineEndX)
-                dayLines.push([start, lineY, end, lineY])
-            }
-            if (dayLines.length != 0)
-            {
-                SessionTimesLines[day].push(dayLines)
-            }
-        }
-    }
-
-    DrawSessionTimes = function()
-    {
         // drawing the labels
-        let lineStartX = SessionTimesDesc.lineStartX
-        let lineEndX = SessionTimesDesc.lineEndX
         a.push()
         a.noStroke()
         a.textAlign(a.CENTER, a.CENTER)
         a.fill(255)
-        for (var d = 0; d < Days.length; d++)
-        {
-            a.text(Days[d], lineStartX - 15, SessionTimesDesc.margin + SessionTimesDesc.spacing*d)
-        }
+        a.text(Days[inDay], lineStart.x - 15, lineY)
         a.pop()
 
+        var VideoListDictLength = Object.keys(VideoListDict).length
+
+        a.push()
+        a.stroke(188, 145, 255, 255*SessionTimesDesc.transparency)
+        a.strokeWeight(10)
+        a.strokeCap(a.SQUARE)
+        var date
+        var day
+        var timesOnlineDay
+        for (var i = 0; i < VideoListDictLength; i++)
+        {
+            date = a.split(Object.keys(VideoListDict)[i], "-")
+            day = new Date(date[0], date[1] - 1, date[2]).getDay()
+            if (day == inDay)
+            {
+                var dayLines = []
+                timesOnlineDay = Object.values(VideoListDict)[i].sessions
+
+                var session
+                var start, end
+                for (var t = 0; t < timesOnlineDay.length; t++)
+                {
+                    session = timesOnlineDay[t]
+                    start = a.map(TimeInMilliseconds(session[0]), 0, 86400000, lineStart.x, lineEnd.x)
+                    end = a.map(TimeInMilliseconds(session[1]), 0, 86400000, lineStart.x, lineEnd.x)
+                    // a.line(start, lineY, end, lineY)
+                    dayLines.push([start, lineY, end, lineY])
+                }
+                if (dayLines.length != 0)
+                {
+                    SessionTimesLines[inDay].push(dayLines)
+                }
+            }
+        }
+        a.pop()
+    }
+
+    DrawSessionTimes = function()
+    {
+        console.log(SessionTimesLines)
         a.push()
         a.stroke(188, 145, 255, 255*SessionTimesDesc.transparency)
         a.strokeWeight(10)
@@ -637,6 +643,7 @@ var TikTokData = function(a)
                 }
             }
         }
+        console.log(x1, y1, x2, y2)
         a.pop()
     }
 
