@@ -5,6 +5,8 @@ var TikTokData = function(a)
     let TIME_CHANGE = -7
     let TEXT_SIZE = 12
     let MARGIN = 40
+    let width = 1000
+    let height = 800
 
     let data = {}
     let VideoList = {}
@@ -35,8 +37,8 @@ var TikTokData = function(a)
 
     a.setup = function()
     {
-        a.pixelDensity(2)
-        var canvas = a.createCanvas(1000, 800)
+        a.pixelDensity(1)
+        var canvas = a.createCanvas(width, height)
         canvas.parent("sketch")
         a.frameRate(30)
         a.noLoop()
@@ -321,11 +323,14 @@ var TikTokData = function(a)
 
     a.draw = function()
     {
+        console.log("start", a.millis())
         a.background(0, 0, 0)
 
         OverallStats()
+        // console.log("OverallStats", a.millis())
 
         VideosPerDayOfWeek()
+        // console.log("VideosPerDayOfWeek", a.millis())
         
         a.push()
         a.textAlign(a.CENTER, a.TOP)
@@ -333,12 +338,14 @@ var TikTokData = function(a)
         a.text("When I'm Online", (SessionTimesDesc.lineEndX - SessionTimesDesc.lineStartX) / 2 + SessionTimesDesc.lineStartX, SessionTimesDesc.margin - SessionTimesDesc.spacing)
         a.pop()
         DrawSessionTimesPeripherals()
+        // console.log("DrawSessionTimesPeripherals", a.millis())
         for (var i = 0; i < 7; i++)
         {
             DrawSessionTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
 
             CalculateLikeTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
         }
+        // console.log("DrawSessionTimes & CalculateLikeTimes", a.millis())
 
         a.push()
         a.textAlign(a.CENTER, a.BASELINE)
@@ -347,7 +354,89 @@ var TikTokData = function(a)
         a.pop()
 
         DrawTimeSpentEachDay()
+        // console.log("DrawTimeSpentEachDay", a.millis())
         DrawVideoWatchFreq()
+        // console.log("DrawVideoWatchFreq", a.millis())
+
+        SliderInteraction()
+        // console.log("SliderInteraction", a.millis())
+    }
+
+    a.mousePressed = function()
+    {
+        a.loop()
+    }
+
+    a.mouseReleased = function()
+    {
+        a.noLoop()
+        SliderDesc.movingStart = false
+    }
+
+    var SliderDesc =
+    {
+        startX : 0,
+        endX : width,
+        sliderRadius : 5,
+        startIndex : 0,
+        endIndex : 0,
+        movingStart : false
+    }
+
+    SliderInteraction = function()
+    {
+        //-- Move circles
+        if (a.mouseIsPressed && a.dist(a.mouseX, a.mouseY, SliderDesc.startX, VideoWatchDesc.lineY) < SliderDesc.sliderRadius)
+        {
+            console.log("moving")
+            SliderDesc.movingStart = true
+        }
+
+        if (SliderDesc.movingStart)
+        {
+            SliderDesc.startX = a.mouseX
+        }
+
+        //-- Keep circles within bounds of drawn line
+        SliderDesc.startX = Math.max(SliderDesc.startX, VideoWatchDesc.lineStartX)
+        SliderDesc.endX = Math.min(SliderDesc.endX, VideoWatchDesc.lineEndX)
+
+        //-- Make sure end is after start
+        if (SliderDesc.endX < SliderDesc.startX + 10)
+        {
+            console.log("overlap")
+            SliderDesc.endX = SliderDesc.startX + 10
+        }
+
+        //-- Calculate start and end indices
+        SliderDesc.startIndex = a.map(
+            SliderDesc.startX, 
+            VideoWatchDesc.lineStartX, 
+            VideoWatchDesc.lineEndX,
+            0,
+            Object.keys(VideoListDict).length
+        )
+        SliderDesc.endIndex = a.map(
+            SliderDesc.endX, 
+            VideoWatchDesc.lineStartX, 
+            VideoWatchDesc.lineEndX,
+            0,
+            Object.keys(VideoListDict).length
+        )
+
+        //-- Draw start circle
+        a.push()
+        a.fill(255, 0, 0)
+        a.ellipseMode(a.RADIUS)
+        a.circle(SliderDesc.startX, VideoWatchDesc.lineY, SliderDesc.sliderRadius)
+        a.pop()
+
+        //-- Draw end circle
+        a.push()
+        a.fill(0, 0, 255)
+        a.ellipseMode(a.RADIUS)
+        a.circle(SliderDesc.endX, VideoWatchDesc.lineY, SliderDesc.sliderRadius)
+        a.pop()
     }
 
     var OverallStatsDesc =
@@ -480,7 +569,7 @@ var TikTokData = function(a)
         // a.line(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y)
         a.pop()
 
-         SessionTimesDesc.transparency = 15 * 10000000/TotalTimeSpent
+        SessionTimesDesc.transparency = 15 * 10000000/TotalTimeSpent
 
         // drawing the labels
         a.push()
