@@ -440,25 +440,25 @@ var TikTokData = function(a)
         //-- Make sure end is after start
         if (SliderDesc.endX < SliderDesc.startX + 10)
         {
-            console.log("overlap")
             SliderDesc.endX = SliderDesc.startX + 10
         }
 
         //-- Calculate start and end indices
-        SliderDesc.startIndex = a.map(
+        SliderDesc.startIndex = parseInt(a.map(
             SliderDesc.startX, 
             VideoWatchDesc.lineStartX, 
             VideoWatchDesc.lineEndX,
             0,
-            Object.keys(VideoListDict).length
-        )
-        SliderDesc.endIndex = a.map(
+            Object.keys(VideoListDict).length - 1
+        ))
+        SliderDesc.endIndex = parseInt(a.map(
             SliderDesc.endX, 
             VideoWatchDesc.lineStartX, 
             VideoWatchDesc.lineEndX,
             0,
-            Object.keys(VideoListDict).length
-        )
+            Object.keys(VideoListDict).length - 1
+        ))
+        console.log(SliderDesc.startIndex, SliderDesc.endIndex)
 
         //-- Draw start circle
         a.push()
