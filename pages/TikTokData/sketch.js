@@ -1,7 +1,7 @@
 
 var TikTokData = function(a)
 {
-    let PERSON = "shreya"
+    let PERSON = "andrea"
     let TIME_CHANGE = -7
     let TEXT_SIZE = 12
     let MARGIN = 40
@@ -57,12 +57,14 @@ var TikTokData = function(a)
         // console.log("VideoListLargestFreq", VideoListLargestFreq)
         // console.log("VideoListDayLargestFreq", Video  ListDayLargestFreq)
         // console.log("TotalTimeSpent", TotalTimeSpent)
+        console.log("LikeListDict", LikeListDict)
 
         //-- Calculate drawables        
         CalculateVideoWatchFreq()
         CalculateTimeSpentEachDay()
         
         CalculateSessionTimes()
+        CalculateLikeTimes()
     }
 
     VideoListCalculations = function()
@@ -232,28 +234,55 @@ var TikTokData = function(a)
     {
         LikeList = data["Activity"]["Like List"]["ItemFavoriteList"]
 
-        var trueDate, dateTimeString, dateString, timeString
+        var trueDateTime, dateTimeString, dateString, timeString, lastDateTime
         for (var i = 0; i < LikeList.length; i++)
         //for (var i = LikeList.length - 10; i < LikeList.length; i++)
         {
-            trueDate = ShiftStringDateTime(LikeList[i]["Date"], TIME_CHANGE)
-            dateTimeString = DateTimeToString(trueDate)
+            trueDateTime = ShiftStringDateTime(LikeList[i]["Date"], TIME_CHANGE)
+            dateTimeString = DateTimeToString(trueDateTime)
             dateString = a.split(dateTimeString, " ")[0]
             timeString = a.split(dateTimeString, " ")[1]
 
+            //-- Add gaps to LikeListDict
+            if (Math.abs(trueDateTime - lastDateTime) > 1000 * 60 * 60 * 24)
+            {
+                var gapDate = new Date(lastDateTime)
+                gapDate.setDate(gapDate.getDate() - 1)
+                gapDate.setHours(0)
+                gapDate.setMinutes(0)
+                gapDate.setSeconds(0)
+                var trueDateTimeCompare = new Date(trueDateTime)
+                trueDateTimeCompare.setHours(0)
+                trueDateTimeCompare.setMinutes(0)
+                trueDateTimeCompare.setSeconds(0)
+                var gapDateString, gapDateFormatted
+                while (Math.abs(gapDate - trueDateTimeCompare) >= 1000 * 60 * 60 * 24)
+                {
+                    gapDateString = a.split(DateTimeToString(gapDate), " ")[0]
+                    gapDateFormatted = new Date(gapDate)
+                    gapDateFormatted.setHours(0)
+                    gapDateFormatted.setMinutes(0)
+                    gapDateFormatted.setSeconds(0)
+                    LikeListDict[gapDateString] = []
+
+                    gapDate.setDate(gapDate.getDate() - 1)
+                }
+            }
+
             if (dateString in LikeListDict)
             {
-                LikeListDict[dateString].push(trueDate)
+                LikeListDict[dateString].push(trueDateTime)
             }
             else
             {
-                LikeListDict[dateString] = [trueDate]
+                LikeListDict[dateString] = [trueDateTime]
             }
 
             if (dateString in VideoListDict)
             {
                 VideoListDict[dateString].likes += 1
             }
+            lastDateTime = trueDateTime
         }
         var maxthing = 0
         // Calculate like percent and likes per minute
@@ -340,13 +369,10 @@ var TikTokData = function(a)
         a.text("When I'm Online", (SessionTimesDesc.lineEndX - SessionTimesDesc.lineStartX) / 2 + SessionTimesDesc.lineStartX, SessionTimesDesc.margin - SessionTimesDesc.spacing)
         a.pop()
         DrawSessionTimesPeripherals()
-        console.log("DrawSessionTimesPeripherals", a.millis())
-        for (var i = 0; i < 7; i++)
-        {
-            CalculateLikeTimes(i, SessionTimesDesc.margin + SessionTimesDesc.spacing*i)
-        }
+
+        // DrawLikeTimes()
         DrawSessionTimes()
-        console.log("DrawSessionTimes & CalculateLikeTimes", a.millis())
+        console.log("DrawLikeTimes & DrawSessionTimes", a.millis())
 
         a.push()
         a.textAlign(a.CENTER, a.BASELINE)
@@ -372,6 +398,7 @@ var TikTokData = function(a)
     {
         a.noLoop()
         SliderDesc.movingStart = false
+        SliderDesc.movingEnd = false
     }
 
     var SliderDesc =
@@ -381,7 +408,8 @@ var TikTokData = function(a)
         sliderRadius : 5,
         startIndex : 0,
         endIndex : 0,
-        movingStart : false
+        movingStart : false,
+        movingEnd : false
     }
 
     SliderInteraction = function()
@@ -389,13 +417,20 @@ var TikTokData = function(a)
         //-- Move circles
         if (a.mouseIsPressed && a.dist(a.mouseX, a.mouseY, SliderDesc.startX, VideoWatchDesc.lineY) < SliderDesc.sliderRadius)
         {
-            console.log("moving")
             SliderDesc.movingStart = true
+        }
+        else if (a.mouseIsPressed && a.dist(a.mouseX, a.mouseY, SliderDesc.endX, VideoWatchDesc.lineY) < SliderDesc.sliderRadius)
+        {
+            SliderDesc.movingEnd = true
         }
 
         if (SliderDesc.movingStart)
         {
             SliderDesc.startX = a.mouseX
+        }
+        else if (SliderDesc.movingEnd)
+        {
+            SliderDesc.endX = a.mouseX
         }
 
         //-- Keep circles within bounds of drawn line
@@ -516,13 +551,11 @@ var TikTokData = function(a)
         dotSize : 5
     }
 
-    CalculateLikeTimes = function(inDay, lineY)
+    var LikeTimesPoints = []
+
+    CalculateLikeTimes = function()
     {
         SessionTimesDesc.likeTransparency = 600 / LikeList.length
-        a.push()
-        a.noStroke()
-        a.fill(255, 181, 181, 255 * SessionTimesDesc.likeTransparency)
-        a.ellipseMode(a.CENTER)
         var LikeListDictLength = Object.keys(LikeListDict).length
         var date
         var day
@@ -532,22 +565,39 @@ var TikTokData = function(a)
         {
             date = a.split(Object.keys(LikeListDict)[i], "-")
             day = new Date(date[0], date[1] - 1, date[2]).getDay()
-            if (day == inDay)
+            likeListDay = Object.values(LikeListDict)[i]
+            var points = []
+            for (var t = 0; t < likeListDay.length; t++)
             {
-                likeListDay = Object.values(LikeListDict)[i]
-                for (var t = 0; t < likeListDay.length; t++)
-                {
-                    xValue = a.map(TimeInMilliseconds(likeListDay[t]), 0, 86400000, SessionTimesDesc.lineStartX + SessionTimesDesc.dotSize, SessionTimesDesc.lineEndX - SessionTimesDesc.dotSize)
-                    a.circle(xValue, lineY + SessionTimesDesc.likePadding, SessionTimesDesc.dotSize)
-                }
+                xValue = a.map(TimeInMilliseconds(likeListDay[t]), 0, 86400000, SessionTimesDesc.lineStartX + SessionTimesDesc.dotSize, SessionTimesDesc.lineEndX - SessionTimesDesc.dotSize)
+                // a.circle(xValue, SessionTimesDesc.margin + SessionTimesDesc.spacing*day + SessionTimesDesc.likePadding, SessionTimesDesc.dotSize)
+                points.push([xValue, SessionTimesDesc.margin + SessionTimesDesc.spacing*day + SessionTimesDesc.likePadding])
+            }
+            LikeTimesPoints.push(points)
+            if (Object.keys(LikeListDict)[i] in VideoListDict)
+            {
+                VideoListDict[Object.keys(LikeListDict)[i]].LikePointsIndex = i
             }
         }
-        a.pop()
     }
     
     DrawLikeTimes = function()
     {
-        
+        a.push()
+        a.noStroke()
+        a.fill(255, 181, 181, 255 * SessionTimesDesc.likeTransparency)
+        a.ellipseMode(a.CENTER)
+        var x, y
+        for (var i = 0; i < LikeTimesPoints.length; i++)
+        {
+            for (var c = 0; c < LikeTimesPoints[i].length; c++)
+            {
+                x = LikeTimesPoints[i][c][0]
+                y = LikeTimesPoints[i][c][1]
+                a.circle(x, y, SessionTimesDesc.dotSize)
+            }
+        }
+        a.pop()
     }
 
     DrawSessionTimesPeripherals = function()
@@ -564,7 +614,7 @@ var TikTokData = function(a)
         a.pop()
     }
 
-    var SessionTimesLines = [[],[],[],[],[],[],[]]
+    var SessionTimesLines = []
 
     CalculateSessionTimes = function()
     {
@@ -596,18 +646,15 @@ var TikTokData = function(a)
                 end = a.map(TimeInMilliseconds(session[1]), 0, 86400000, lineStartX, lineEndX)
                 dayLines.push([start, lineY, end, lineY])
             }
-            if (dayLines.length != 0)
-            {
-                SessionTimesLines[day].push(dayLines)
-            }
+            SessionTimesLines.push(dayLines)
         }
     }
 
     DrawSessionTimes = function()
     {
+        // console.log(SessionTimesLines)
         // drawing the labels
         let lineStartX = SessionTimesDesc.lineStartX
-        let lineEndX = SessionTimesDesc.lineEndX
         a.push()
         a.noStroke()
         a.textAlign(a.CENTER, a.CENTER)
@@ -627,14 +674,11 @@ var TikTokData = function(a)
         {
             for (var i = 0; i < SessionTimesLines[d].length; i++)
             {
-                for (var j = 0; j < SessionTimesLines[d][i].length; j++)
-                {
-                    x1 = SessionTimesLines[d][i][j][0]
-                    y1 = SessionTimesLines[d][i][j][1]
-                    x2 = SessionTimesLines[d][i][j][2]
-                    y2 = SessionTimesLines[d][i][j][3]
-                    a.line(x1, y1, x2, y2)
-                }
+                x1 = SessionTimesLines[d][i][0]
+                y1 = SessionTimesLines[d][i][1]
+                x2 = SessionTimesLines[d][i][2]
+                y2 = SessionTimesLines[d][i][3]
+                a.line(x1, y1, x2, y2)
             }
         }
         a.pop()
@@ -994,6 +1038,7 @@ var TikTokData = function(a)
             this.likePercent = 0
             this.likesPerMinute = 0
             this.sessions = []
+            this.LikePointsIndex = undefined
         }
 
         addPair = function(time, link)
