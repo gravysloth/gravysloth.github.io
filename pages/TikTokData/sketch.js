@@ -47,17 +47,18 @@ var TikTokData = function(a)
         a.strokeCap(a.ROUND)
         
         VideoListCalculations()
+        SliderDesc.startIndex = Object.keys(VideoListDict).length-1
         
         LikeListCalculations()
 
-        console.log("VideoListDict", VideoListDict)
+        // console.log("VideoListDict", VideoListDict)
         // console.log("VideoListDayFreq", VideoListDayFreq)
         // console.log("TimesOnlineCount", TimesOnlineCount)
-        console.log("TimesOnlineDict", TimesOnlineDict)
+        // console.log("TimesOnlineDict", TimesOnlineDict)
         // console.log("VideoListLargestFreq", VideoListLargestFreq)
         // console.log("VideoListDayLargestFreq", Video  ListDayLargestFreq)
         // console.log("TotalTimeSpent", TotalTimeSpent)
-        console.log("LikeListDict", LikeListDict)
+        // console.log("LikeListDict", LikeListDict)
 
         //-- Calculate drawables        
         CalculateVideoWatchFreq()
@@ -210,7 +211,6 @@ var TikTokData = function(a)
             var day = date.getDay()
             TimePerDay[day] += Object.values(VideoListDict)[i].timeSpent
         }
-        console.log(TimePerDay)
 
         for (var i = 0; i < VideoListDayFreq.length; i++)
         {
@@ -354,14 +354,14 @@ var TikTokData = function(a)
 
     a.draw = function()
     {
-        console.log("start", a.millis())
+        // console.log("start", a.millis())
         a.background(0, 0, 0)
 
         OverallStats()
-        console.log("OverallStats", a.millis())
+        // console.log("OverallStats", a.millis())
 
         VideosPerDayOfWeek()
-        console.log("VideosPerDayOfWeek", a.millis())
+        // console.log("VideosPerDayOfWeek", a.millis())
         
         a.push()
         a.textAlign(a.CENTER, a.TOP)
@@ -372,7 +372,7 @@ var TikTokData = function(a)
 
         // DrawLikeTimes()
         DrawSessionTimes()
-        console.log("DrawLikeTimes & DrawSessionTimes", a.millis())
+        // console.log("DrawLikeTimes & DrawSessionTimes", a.millis())
 
         a.push()
         a.textAlign(a.CENTER, a.BASELINE)
@@ -381,12 +381,12 @@ var TikTokData = function(a)
         a.pop()
 
         DrawTimeSpentEachDay()
-        console.log("DrawTimeSpentEachDay", a.millis())
+        // console.log("DrawTimeSpentEachDay", a.millis())
         DrawVideoWatchFreq()
-        console.log("DrawVideoWatchFreq", a.millis())
+        // console.log("DrawVideoWatchFreq", a.millis())
 
         SliderInteraction()
-        console.log("SliderInteraction", a.millis())
+        // console.log("SliderInteraction", a.millis())
     }
 
     a.mousePressed = function()
@@ -435,12 +435,21 @@ var TikTokData = function(a)
 
         //-- Keep circles within bounds of drawn line
         SliderDesc.startX = Math.max(SliderDesc.startX, VideoWatchDesc.lineStartX)
+        SliderDesc.startX = Math.min(SliderDesc.startX, VideoWatchDesc.lineEndX)
+        SliderDesc.endX = Math.max(SliderDesc.endX, VideoWatchDesc.lineStartX)
         SliderDesc.endX = Math.min(SliderDesc.endX, VideoWatchDesc.lineEndX)
-
+        
         //-- Make sure end is after start
         if (SliderDesc.endX < SliderDesc.startX + 10)
         {
-            SliderDesc.endX = SliderDesc.startX + 10
+            if (SliderDesc.endX >= VideoWatchDesc.lineEndX)
+            {
+                SliderDesc.startX = SliderDesc.endX - 10
+            }
+            else
+            {
+                SliderDesc.endX = SliderDesc.startX + 10
+            }
         }
 
         //-- Calculate start and end indices
@@ -448,17 +457,17 @@ var TikTokData = function(a)
             SliderDesc.startX, 
             VideoWatchDesc.lineStartX, 
             VideoWatchDesc.lineEndX,
-            0,
-            Object.keys(VideoListDict).length - 1
+            Object.keys(VideoListDict).length - 1,
+            0
         ))
         SliderDesc.endIndex = parseInt(a.map(
             SliderDesc.endX, 
             VideoWatchDesc.lineStartX, 
             VideoWatchDesc.lineEndX,
-            0,
-            Object.keys(VideoListDict).length - 1
+            Object.keys(VideoListDict).length - 1,
+            0
         ))
-        console.log(SliderDesc.startIndex, SliderDesc.endIndex)
+        SliderDesc.endIndex = Math.min(SliderDesc.endIndex, Object.keys(VideoListDict).length - 1)
 
         //-- Draw start circle
         a.push()
@@ -621,9 +630,9 @@ var TikTokData = function(a)
         let lineStartX = SessionTimesDesc.lineStartX
         let lineEndX = SessionTimesDesc.lineEndX
 
-        SessionTimesDesc.transparency = 15 * 10000000/TotalTimeSpent
-
         var VideoListDictLength = Object.keys(VideoListDict).length
+
+        SessionTimesDesc.transparency = 21.64 / VideoListDictLength
 
         var date
         var day
@@ -654,6 +663,9 @@ var TikTokData = function(a)
     {
         // console.log(SessionTimesLines)
         // drawing the labels
+        SessionTimesDesc.transparency = 21.64 / Math.abs(SliderDesc.endIndex - SliderDesc.startIndex)
+        SessionTimesDesc.transparency = Math.min(SessionTimesDesc.transparency, 0.8)
+
         let lineStartX = SessionTimesDesc.lineStartX
         a.push()
         a.noStroke()
@@ -670,7 +682,7 @@ var TikTokData = function(a)
         a.strokeWeight(10)
         a.strokeCap(a.SQUARE)
         var x1, y1, x2, y2
-        for (var d = 0; d < SessionTimesLines.length; d++)
+        for (var d = SliderDesc.endIndex; d < SliderDesc.startIndex; d++)
         {
             for (var i = 0; i < SessionTimesLines[d].length; i++)
             {
