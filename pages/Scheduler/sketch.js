@@ -49,25 +49,97 @@ var Scheduler = function(a)
         selectionHandler.update();
     }
 
+    a.mouseClicked = function()
+    {
+        if (a.keyIsDown(a.SHIFT))
+        {
+            selectionHandler.handleShiftClick(a.mouseX, a.mouseY);
+        }
+        else
+        {
+            selectionHandler.handleClick(a.mouseX, a.mouseY);
+        }
+    }
+
     class SelectionHandler
     {
         constructor()
         {
-            this.selected = [];
+            this.lastClick = false;
+            this.lastDayClick;
+            this.lastHourClick;
+            this.lastHalfClick;
         }
 
         update()
         {
 
         }
-    }
 
-    class Selection
-    {
-        constructor(start, end)
+        handleClick(mouseX, mouseY)
         {
-            this.start = start;
-            this.end = end;
+            var halfClicked = this.mouseToHalfClicked(mouseY);
+            this.lastClick = week.days[this.mouseToDayIndex(mouseX)].hours[this.mouseToHourIndex(mouseY)].hourClicked(halfClicked);
+            this.lastDayClick = this.mouseToDayIndex(mouseX);
+            this.lastHourClick = this.mouseToHourIndex(mouseY);
+            this.lastHalfClick = halfClicked;
+        }
+
+        handleShiftClick(mouseX, mouseY)
+        {
+            if (this.lastClick)
+            {
+                if (this.mouseToDayIndex(mouseX) == this.lastDayClick)
+                {
+                    var halfClicked = this.mouseToHalfClicked(mouseY);
+                    var select;
+                    if (this.mouseToHourIndex(mouseY) >= this.lastHourClick)
+                    {
+                        select = true;
+                    }
+                    else
+                    {
+                        select = false
+                    }
+                    if (this.lastHalfClick == 0)
+                    {
+                        week.days[this.mouseToDayIndex(mouseX)].hours[this.lastHourClick].setSelected(1, select);
+                    }
+                    if (select)
+                    {
+                        for (var i = this.lastHourClick; i < this.mouseToHourIndex(mouseY) + 1; i++)
+                        {
+                            if (i > this.lastHourClick)
+                            {
+                                if (halfClicked == 0 && i == this.mouseToHourIndex(mouseY))
+                                {
+                                    week.days[this.mouseToDayIndex(mouseX)].hours[i].setSelected(0, select);
+                                }
+                                else
+                                {
+                                    week.days[this.mouseToDayIndex(mouseX)].hours[i].setSelected(0, select);
+                                    week.days[this.mouseToDayIndex(mouseX)].hours[i].setSelected(1, select);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        mouseToDayIndex(mouseX)
+        {
+            return a.floor((mouseX - week.x)/week.dayW);
+        }
+
+        mouseToHourIndex(mouseY)
+        {
+            return a.floor((mouseY - week.y)/(week.h/dayLength));
+        }
+
+        mouseToHalfClicked(mouseY)
+        {
+            return a.floor((mouseY - week.y)/(week.h/dayLength)*2)/2 - this.mouseToHourIndex(mouseY);
         }
     }
 
@@ -96,7 +168,6 @@ var Scheduler = function(a)
                 );
                 this.days.push(day);
             }
-            console.log(this.days);
         }
 
         drawWeek()
@@ -152,7 +223,7 @@ var Scheduler = function(a)
             a.push()
             a.strokeWeight(2);
             a.stroke(117, 91, 168);
-            a.fill(190, 170, 230);
+            a.fill(27, 91, 209, 100);
             for (var i = 0; i < dayLength; i++)
             {
                 this.hours[i].drawHour();
@@ -183,10 +254,22 @@ var Scheduler = function(a)
             this.y = y;
             this.w = w;
             this.h = h;
+            this.selected = [false, false];
         }
 
         drawHour()
         {
+            a.push()
+            a.noStroke();
+            if (this.selected[0])
+            {
+                a.rect(this.x, this.y, this.w, this.h/2);
+            }
+            if (this.selected[1])
+            {
+                a.rect(this.x, this.y + this.h/2, this.w, this.h/2);
+            }
+            a.pop()
             if (this.hour != 0)
             {
                 if (this.hour%2 == 0)
@@ -210,6 +293,32 @@ var Scheduler = function(a)
             a.textAlign(a.RIGHT, a.CENTER);
             a.text(this.hour, this.x - 10, this.y);
             a.pop();
+        }
+
+        hourClicked(halfClicked)
+        {
+            if (halfClicked == 0)
+            {
+                this.selected[0] = !this.selected[0];
+                return this.selected[0];
+            }
+            else
+            {
+                this.selected[1] = !this.selected[1];
+                return this.selected[1];
+            }
+        }
+
+        setSelected(halfClicked, bool)
+        {
+            if (halfClicked == 0)
+            {
+                this.selected[0] = bool;
+            }
+            else
+            {
+                this.selected[1] = bool;
+            }
         }
     }
 
