@@ -65,7 +65,7 @@ function setup(){
 
   jellys = []
   jellysNum = 3
-  jellysMax = 12
+  jellysMax = 50
   jellysEaten = 0
 
   mouseFriends = []
