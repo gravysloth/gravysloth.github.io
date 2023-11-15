@@ -63,6 +63,7 @@ function resetGame() {
   changeColor = color(targetColorArray[0], targetColorArray[1], targetColorArray[2])
   targetCircle.color = targetColor
   changeCircle.color = changeColor
+  outputText = "select color"
 }
 
 function mouseClicked() {
