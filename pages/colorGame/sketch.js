@@ -78,7 +78,6 @@ function mouseClicked() {
   }
   if (checkMouseWithinButton(resetButton)) {
     resetGame()
-    console.log("yes")
   }
 }
 
