@@ -73,11 +73,11 @@ function resetGame() {
   outputText = "select color"
 }
 
-function averageColor(originalColor, subtractColor) {
+function averageColor(originalColor, averageColor) {
   let newColor = color(
-    (red(originalColor) + red(subtractColor)*threshold)/2,
-    (green(originalColor) + green(subtractColor)*threshold)/2,
-    (blue(originalColor) + blue(subtractColor)*threshold)/2)
+    (red(originalColor) + red(averageColor)*threshold)/2,
+    (green(originalColor) + green(averageColor)*threshold)/2,
+    (blue(originalColor) + blue(averageColor)*threshold)/2)
   return newColor
 }
 
