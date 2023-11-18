@@ -1,6 +1,3 @@
-function preload() {
-}
-
 let targetCircle
 let targetColor
 
@@ -9,14 +6,16 @@ let changeColor
 
 let baseCircles = []
 
-let threshold = 10
+let threshold = 0.2
 
 let rgbRandom
-let rgb = ["red", "green", "blue"]
+let rgb = ["red", "yellow", "blue"]
 
 let outputText = "select color"
 
-let resetButton
+let resetButton, textColor
+
+let redColor, yellowColor, blueColor
 
 function setup() {
   var canvas = createCanvas(600, 600)
@@ -24,15 +23,24 @@ function setup() {
   frameRate(30)
   noStroke()
 
-  resetButton = new Button(createVector(width/2 - 50, 500), 100, 50, color(255), "NEXT")
-  for (let i = 0; i < 3; i++) {
-    let colorBase = [0, 0, 0]
-    colorBase[i] = 255
-    baseCircles.push(new ColorCircle(
-      createVector(150 * i + 150, 350),
-      100,
-      color(colorBase)))
-  }
+  textColor = color(255)
+  redColor = color(255, 0, 0)
+  yellowColor = color(255, 255, 0)
+  blueColor = color(0, 0, 255)
+  baseCircles.push(new ColorCircle(
+    createVector(150, 350),
+    100,
+    redColor))
+  baseCircles.push(new ColorCircle(
+    createVector(300, 350),
+    100,
+    yellowColor))
+  baseCircles.push(new ColorCircle(
+    createVector(450, 350),
+    100,
+    blueColor))
+
+  resetButton = new Button(createVector(width / 2 - 50, 500), 100, 50, color(255), "NEXT")
   targetCircle = new ColorCircle(createVector(450, 150), 200, targetColor)
   changeCircle = new ColorCircle(createVector(150, 150), 200, changeColor)
   resetGame()
@@ -48,7 +56,7 @@ function draw() {
   resetButton.draw()
 
   push()
-  fill(255)
+  fill(textColor)
   textSize(16)
   textAlign(CENTER)
   text(outputText, width / 2, height - 150)
@@ -56,6 +64,24 @@ function draw() {
 }
 
 function resetGame() {
+  changeColor = getRandomColor()
+  rgbRandom = getRandomInt(0, 2)
+  targetColor = averageColor(changeColor, baseCircles[rgbRandom].color)
+  targetCircle.color = targetColor
+  changeCircle.color = changeColor
+  textColor = color(255)
+  outputText = "select color"
+}
+
+function averageColor(originalColor, subtractColor) {
+  let newColor = color(
+    (red(originalColor) + red(subtractColor)*threshold)/2,
+    (green(originalColor) + green(subtractColor)*threshold)/2,
+    (blue(originalColor) + blue(subtractColor)*threshold)/2)
+  return newColor
+}
+
+function resetGameOld() {
   targetColor = getRandomColor()
   let targetColorArray = [red(targetColor), green(targetColor), blue(targetColor)]
   rgbRandom = getRandomInt(0, 2)
@@ -70,6 +96,7 @@ function mouseClicked() {
   checkMouseWithinCircle(targetCircle)
   for (let i = 0; i < baseCircles.length; i++) {
     if (checkMouseWithinCircle(baseCircles[i])) {
+      textColor = baseCircles[rgbRandom].color
       if (i == rgbRandom) {
         outputText = "YESSSS! It was " + rgb[rgbRandom]
       } else {
@@ -110,9 +137,9 @@ function checkMouseWithinButton(button) {
 
 function getRandomColor() {
   return color(
-    getRandomInt(threshold, 255 - threshold),
-    getRandomInt(threshold, 255 - threshold),
-    getRandomInt(threshold, 255 - threshold))
+    getRandomInt(0, 255),
+    getRandomInt(0, 255),
+    getRandomInt(0, 255))
 }
 
 function getRandomInt(min, max) {
@@ -135,7 +162,7 @@ class Button {
     fill(0)
     textAlign(CENTER, CENTER)
     textSize(24)
-    text(this.buttonText, this.position.x + this.width/2, this.position.y + this.height/2)
+    text(this.buttonText, this.position.x + this.width / 2, this.position.y + this.height / 2)
     pop()
   }
 }
