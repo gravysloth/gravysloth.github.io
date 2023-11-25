@@ -75,9 +75,9 @@ function resetGame() {
 
 function averageColor(originalColor, averageColor) {
   let newColor = color(
-    (red(originalColor) + red(averageColor)*threshold)/2,
-    (green(originalColor) + green(averageColor)*threshold)/2,
-    (blue(originalColor) + blue(averageColor)*threshold)/2)
+    (red(originalColor) + red(averageColor)*threshold)/(1+threshold),
+    (green(originalColor) + green(averageColor)*threshold)/(1+threshold),
+    (blue(originalColor) + blue(averageColor)*threshold)/(1+threshold))
   return newColor
 }
 
