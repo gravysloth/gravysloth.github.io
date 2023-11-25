@@ -22,7 +22,6 @@ var TikTokData = function(a)
 
     var TimesOnlineDict = {}
     var TimesOnlineCount = 0
-    var SessionLengths = []
     var TimePerDay = [0, 0, 0, 0, 0, 0, 0]
     var TotalTimeSpent = 0
 
