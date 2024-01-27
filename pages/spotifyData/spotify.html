@@ -1,19 +1,85 @@
 <!DOCTYPE html>
 <html class="no-js">
-    <head>
-        <meta charset="utf-8">
-        <title>Spotify data</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="sketch.css" />
-        <script src="../p5.min.js"></script>
-        <script src="sketch.js"></script>
-    </head>
 
-    <body>
-        <script src="scripts/fileRunner.js"></script>
-         <button onclick = "doTheThing()"> click me !</button>
-        <div id="sketch">
+<head>
+    <meta charset="utf-8">
+    <title>Spotify data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="sketch.css" />
+    <script src="../p5.min.js"></script>
+    <script src="sketch.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Source+Code+Pro&family=VT323&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <script src="scripts/fileRunner.js"></script>
+    <button onclick="doTheThing()"> click me !</button>
+    <div id="instructions" class="centerAlign">
+        Upload files and then click button
+    </div>
+    <div id="outputSummary">
+        <div class="centerAlign">
+            Since <span id="firstDateTime" class="variable">January 01, 2000 @ 02:34am</span>,
         </div>
+        <br>
+        <div class="leftAlign">
+            You listened to <span id="numUniqueSongs" class="variable">12345</span> different songs
+        </div>
+        <div class="rightAlign">
+            for a total of <span id="numTimeListened" class="variable">12345 hours</span>.
+        </div>
+        <br>
+        <div class="leftAlign">
+            Your most skipped song was <span id="mostSkippedSong" class="variable">most skipped song</span>
+        </div>
+        <div class="rightAlign">
+            with <span id="numSkips" class="variable">12345</span> skips.
+        </div>
+        <br>
+        <div class="centerAlign">
+            Your most listened to songs by...
+        </div>
+        <br>
+        <div class="leftAlign">
+            ...<span class="purple bold">number of listens</span>
+        </div>
+        <div id="mostFreqSongs" class="scrollView">
+            <div class="flex-container listItem">
+                <div class="flex-item-left leftAlign number">
+                    1
+                </div>
+                <div class="flex-item-left leftAlign songNameArtist">
+                    SongName - Artists
+                </div>
+                <div class="spacer"></div>
+                <div class="flex-item-right rightAlign numTimes bold">
+                    123
+                </div>
+            </div>
+        </div>
+        <div class="rightAlign">
+            ...<span class="purple bold">duration</span>
+        </div>
+        <div id="mostDurationSongs" class="scrollView">
+            <div class="flex-container listItem">
+                <div class="flex-item-left leftAlign number">
+                    1
+                </div>
+                <div class="flex-item-left leftAlign songNameArtist">
+                    SongName - Artists
+                </div>
+                <div class="spacer"></div>
+                <div class="flex-item-right rightAlign numTimes bold">
+                    123
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sketch">
+    </div>
 
-    </body>
+</body>
+
 </html>

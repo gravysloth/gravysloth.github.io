@@ -4,8 +4,8 @@
 //
 
 var fileNames = [
-    // "Streaming_History_Audio_2014-2016_0",
-    // "Streaming_History_Audio_2016-2018_1",
+    "Streaming_History_Audio_2014-2016_0",
+    "Streaming_History_Audio_2016-2018_1",
     "Streaming_History_Audio_2018-2021_2",
     "Streaming_History_Audio_2021-2022_3",
     "Streaming_History_Audio_2022-2024_4",
@@ -17,6 +17,7 @@ function getFileName(index) {
 }
 
 function doTheThing() {
+    document.getElementById('sketch').style.display = "block"
     numberDoneProcessed = 0
     for (let i = 0; i < fileNames.length; i++) {
         runFile(i)
@@ -32,6 +33,43 @@ function checkIfDataIsDone() {
         console.log("ahhhh yay")
         calculateFromMaps()
         consoleLogFromCalculations()
+        outputFromCalculations()
+    }
+}
+
+function outputFromCalculations() {
+    document.getElementById('outputSummary').style.display = "block"
+    document.getElementById('numUniqueSongs').innerText = numberWithCommas(uriToTrackStringMap.size)
+    document.getElementById('numTimeListened').innerText = msToString(totalDuration)
+    document.getElementById('mostSkippedSong').innerText = uriToTrackStringMap.get(mostSkippedSong[0])
+    document.getElementById('numSkips').innerText = numberWithCommas(mostSkippedSong[1])
+    document.getElementById('firstDateTime').innerText = dateTimeToString(firstSongDateTime)
+    let freqSongsView = document.getElementById('mostFreqSongs')
+    freqSongsView.innerHTML = ""
+    let durationSongsView = document.getElementById('mostDurationSongs')
+    durationSongsView.innerHTML = ""
+    for (let i = 0; i < topLength; i++) {
+        let freqSongItem = ""
+        freqSongItem += '<div class="flex-container listItem"><div class="flex-item-left leftAlign number">'
+        freqSongItem += i + 1
+        freqSongItem += '</div><div class="flex-item-left leftAlign songNameArtist">'
+        freqSongItem += uriToTrackStringMap.get(sortedSongsFreq[i][0])
+        freqSongItem += '</div><div class="spacer"></div><div class="flex-item-right rightAlign numTimes bold">'
+        freqSongItem += sortedSongsFreq[i][1]
+        freqSongItem += '</div></div>'
+
+        freqSongsView.innerHTML += freqSongItem
+
+        let durationSongItem = ""
+        durationSongItem += '<div class="flex-container listItem"><div class="flex-item-left leftAlign number">'
+        durationSongItem += i + 1
+        durationSongItem += '</div><div class="flex-item-left leftAlign songNameArtist">'
+        durationSongItem += uriToTrackStringMap.get(sortedSongDuration[i][0])
+        durationSongItem += '</div><div class="spacer"></div><div class="flex-item-right rightAlign numTimes bold">'
+        durationSongItem += msToString(sortedSongDuration[i][1])
+        durationSongItem += '</div></div>'
+
+        durationSongsView.innerHTML += durationSongItem
     }
 }
 
@@ -56,6 +94,8 @@ var mostSkippedSong = null
 
 var songDataByMonth = {}
 
+var firstSongDateTime = null
+
 function handleJsonData(data) {
     // loop through the json data
     for (let i = 0; i < data.length; i++) {
@@ -78,22 +118,29 @@ function handleJsonData(data) {
         let msPlayed = data[i]["ms_played"]
         let skipped = data[i]["skipped"]
 
-        // --------- start of testing zone --------- //
+        if (firstSongDateTime == null || date < firstSongDateTime) {
+            firstSongDateTime = date
+        }
+
         let yearMonth = date.getUTCFullYear() + "-" + date.getUTCMonth()
         if (!(yearMonth in songDataByMonth)) {
-            songDataByMonth[yearMonth] = {}
+            songDataByMonth[yearMonth] = {
+                "duration": 0,
+                "numberSongs": 0,
+                "songs": {}
+            }
         }
-        if (!(uri in songDataByMonth[yearMonth])) {
-            songDataByMonth[yearMonth][uri] = {
+        if (!(uri in songDataByMonth[yearMonth]["songs"])) {
+            songDataByMonth[yearMonth]["songs"][uri] = {
                 "freq": 0,
                 "duration": 0
             }
         }
+        songDataByMonth[yearMonth]["duration"] += msPlayed
+        songDataByMonth[yearMonth]["numberSongs"] += 1
 
-        songDataByMonth[yearMonth][uri]["freq"] += 1
-        songDataByMonth[yearMonth][uri]["duration"] += msPlayed
-
-        // --------- end of testing zone --------- //
+        songDataByMonth[yearMonth]["songs"][uri]["freq"] += 1
+        songDataByMonth[yearMonth]["songs"][uri]["duration"] += msPlayed
 
         totalDuration += msPlayed
 
@@ -136,7 +183,7 @@ function calculateFromMaps() {
     sortedSongDuration.sort(sortByValue)
 }
 
-var topLength = 5;
+var topLength = 100;
 
 function consoleLogFromCalculations() {
     console.log("You listened to " + numberWithCommas(uriToTrackStringMap.size) + " different songs\nFor a total of " + msToString(totalDuration))
@@ -181,6 +228,13 @@ function msToString(ms) {
     if (seconds > 0) timeString += seconds + "s"
     if (weeks > 0) timeString += " (~" + numberWithCommas(Math.round(ms / 3_600_600)) + " hours)"
     return timeString
+}
+
+function dateTimeToString(dateTime) {
+    let dateTimeSplit = dateTime.toUTCString().split(' ')
+    let date = dateTimeSplit[0] + " " + dateTimeSplit[2] + " " + dateTimeSplit[1] + " " + dateTimeSplit[3]
+    let time = dateTimeSplit[4]
+    return date + " @ " + time + " UTC"
 }
 
 function numberWithCommas(x) {
