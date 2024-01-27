@@ -73,6 +73,24 @@ body {
 	color: #ff7474;
 }
 
+.tooltiptext {
+	visibility: hidden;
+	font-size: 12px;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding-left: 10px;
+	padding-top: 4px;
+
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+}
+
+#numSkips:hover ~ .tooltiptext {
+	visibility: visible;
+}
+
 .centerAlign {
 	text-align: center;
 }

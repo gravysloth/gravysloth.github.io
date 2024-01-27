@@ -4,7 +4,7 @@
 //
 
 var fileNames = [
-    "Streaming_History_Audio_2014-2016_0",
+    // "Streaming_History_Audio_2014-2016_0",
     "Streaming_History_Audio_2016-2018_1",
     "Streaming_History_Audio_2018-2021_2",
     "Streaming_History_Audio_2021-2022_3",
@@ -32,12 +32,13 @@ function checkIfDataIsDone() {
         isDataDone = true
         console.log("ahhhh yay")
         calculateFromMaps()
-        consoleLogFromCalculations()
+        // consoleLogFromCalculations()
         outputFromCalculations()
     }
 }
 
 function outputFromCalculations() {
+    document.getElementById('instructions').style.display = "none"
     document.getElementById('outputSummary').style.display = "block"
     document.getElementById('numUniqueSongs').innerText = numberWithCommas(uriToTrackStringMap.size)
     document.getElementById('numTimeListened').innerText = msToString(totalDuration)
@@ -93,12 +94,14 @@ var songSkippedFreq = new Map()
 var mostSkippedSong = null
 
 var songDataByMonth = {}
+var songDataByDayOfWeek = {}
 
 var firstSongDateTime = null
 
 function handleJsonData(data) {
     // loop through the json data
     for (let i = 0; i < data.length; i++) {
+        // --------- pruning --------- //
         let uri = data[i]["spotify_track_uri"]
         if (uri == null) {
             continue
@@ -111,18 +114,26 @@ function handleJsonData(data) {
         if (platform == "iOS 9.1 (iPhone5,2)") {
             continue
         }
-        // --------- end of pruning --------- //
+
+        // --------- get the variables --------- //
         let ts = data[i]["ts"]
         let date = new Date(ts)
-
         let msPlayed = data[i]["ms_played"]
         let skipped = data[i]["skipped"]
+        let yearMonth = date.getUTCFullYear() + "-" + date.getUTCMonth()
+        let dayOfWeek = date.getUTCDay()
 
+        // --------- add to the uri to track string map for lookup --------- //
+        if (!uriToTrackStringMap.has(uri)) {
+            uriToTrackStringMap.set(uri, makeTrackString(data[i]))
+        }
+
+        // --------- first time a song was played ever --------- //
         if (firstSongDateTime == null || date < firstSongDateTime) {
             firstSongDateTime = date
         }
 
-        let yearMonth = date.getUTCFullYear() + "-" + date.getUTCMonth()
+        // --------- song data for each month --------- //
         if (!(yearMonth in songDataByMonth)) {
             songDataByMonth[yearMonth] = {
                 "duration": 0,
@@ -142,25 +153,35 @@ function handleJsonData(data) {
         songDataByMonth[yearMonth]["songs"][uri]["freq"] += 1
         songDataByMonth[yearMonth]["songs"][uri]["duration"] += msPlayed
 
+        // --------- song data for day of the week --------- //
+        if (!(dayOfWeek in songDataByDayOfWeek)) {
+            songDataByDayOfWeek[dayOfWeek] = {
+                "duration": 0,
+                "numberSongs": 0
+            }
+        }
+        songDataByDayOfWeek[dayOfWeek]["duration"] += msPlayed
+        songDataByDayOfWeek[dayOfWeek]["numberSongs"] += 1
+
+        // --------- add to total duration --------- //
         totalDuration += msPlayed
 
-        if (!uriToTrackStringMap.has(uri)) {
-            uriToTrackStringMap.set(uri, makeTrackString(data[i]))
-        }
-
-        if (songFreqMap.has(uri)) {
-            songFreqMap.set(uri, songFreqMap.get(uri) + 1)
-        } else {
-            songFreqMap.set(uri, 1)
-        }
-
+        // --------- add to song duration map --------- //
         if (songDurationMap.has(uri)) {
             songDurationMap.set(uri, songDurationMap.get(uri) + msPlayed)
         } else {
             songDurationMap.set(uri, msPlayed)
         }
 
-        if (skipped == true && msPlayed < 2000) {
+        // --------- add to song frequency map --------- //
+        if (songFreqMap.has(uri)) {
+            songFreqMap.set(uri, songFreqMap.get(uri) + 1)
+        } else {
+            songFreqMap.set(uri, 1)
+        }
+
+        // --------- add to song skipped map if skipped and less than 10 seconds played --------- //
+        if (skipped = true && msPlayed < 10000) {
             if (songSkippedFreq.has(uri)) {
                 songSkippedFreq.set(uri, songSkippedFreq.get(uri) + 1)
             } else {
