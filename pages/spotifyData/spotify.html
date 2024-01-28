@@ -17,6 +17,7 @@
 <body>
     <script src="scripts/fileRunner.js"></script>
     <button onclick="myData()">my data</button>
+    <button onclick="yourData()">your data</button>
     <div id="instructions" class="centerAlign">
         Upload files and then click button.<br>Or look at my data
     </div>
@@ -37,7 +38,7 @@
         </div>
         <div class="rightAlign">
             with <span id="numSkips" class="variable">12345</span> skips.
-            <span class="tooltiptext">(listened for less than <span class="variable" id="skippedThreshold">23</span> seconds)</span>
+            <span class="tooltiptext">[listened for less than <span class="variable" id="skippedThreshold">23</span> seconds<br>and hit next]</span>
         </div>
         <br>
         <div class="centerAlign">
@@ -81,7 +82,9 @@
     </div>
     <div id="sketch">
     </div>
-
+    <textarea id="packagedData">
+        none
+    </textarea>
 </body>
 
 </html>

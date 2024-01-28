@@ -1,6 +1,11 @@
+//
+//
+//
+//
+//
 
-let marqueeData = {}
-let streamingData = {}
+let timeSinceStart = 0
+let fps = 30
 
 function preload() {
 }
@@ -8,7 +13,7 @@ function preload() {
 function setup() {
   var canvas = createCanvas(600, 600)
   canvas.parent("sketch")
-  frameRate(30)
+  frameRate(fps)
   angleMode(DEGREES)
   noStroke()
 
@@ -20,6 +25,8 @@ function setup() {
 }
 
 function draw() {
+  timeSinceStart += deltaTime
+
   // background(24, 24, 26)
   background(0)
 
@@ -71,7 +78,7 @@ function loading() {
 }
 
 function rotateLoader() {
-  if (frameCount % 90 == 0) {
+  if (frameCount % (fps * 3) == 0) {
     lg.rotate(rotateBy)
     canvasRotate -= rotateBy
   }
@@ -85,7 +92,7 @@ class LoadingBall {
     this.c = color(c)
     this.ch = color(c)
     this.history = []
-    this.historyLength = 5
+    this.historyLength = 0
   }
 
   draw() {
@@ -128,8 +135,8 @@ class LoadingBall {
     this.vel.add(lg)
 
     // friction
-    if (this.vel.mag() > 10) {
-      this.vel.mult(0.99)
+    if (this.vel.mag() > 15) {
+      this.vel.mult(0.95)
     }
 
     // add some random noise
