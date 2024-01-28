@@ -184,7 +184,7 @@ body {
 	display: flex;
 	width: fit-content;
 	animation-name: infiniteScroll;
-	animation-duration: 15s;
+	animation-duration: 20s;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
 }
