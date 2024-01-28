@@ -3,7 +3,7 @@
 //
 //
 
-var fileNames = [
+var myFileNames = [
     "Streaming_History_Audio_2014-2016_0",
     "Streaming_History_Audio_2016-2018_1",
     "Streaming_History_Audio_2018-2021_2",
@@ -13,65 +13,22 @@ var fileNames = [
 ]
 
 function getFileName(index) {
-    return "data/" + fileNames[index] + ".json"
+    return "data/" + myFileNames[index] + ".json"
 }
 
 function myData() {
     document.getElementById('sketch').style.display = "block"
-    doMyData()
-    // resetData()
-    // for (let i = 0; i < fileNames.length; i++) {
-    //     runFile(i)
-    // }
+    resetData()
+    for (let i = 0; i < myFileNames.length; i++) {
+        runFile(i)
+    }
 }
 
 function yourData() {
     document.getElementById('sketch').style.display = "block"
     resetData()
-    for (let i = 0; i < fileNames.length; i++) {
+    for (let i = 0; i < myFileNames.length; i++) {
         runFile(i)
-    }
-}
-
-function doMyData() {
-    outputFromMyData()
-}
-
-function outputFromMyData() {
-    document.getElementById('instructions').style.display = "none"
-    document.getElementById('outputSummary').style.display = "block"
-    document.getElementById('skippedThreshold').innerText = packagedData["skippedThreshold"] / 1000
-    document.getElementById('numUniqueSongs').innerText = numberWithCommas(uriToTrackStringMap.size)
-    document.getElementById('numTimeListened').innerText = msToString(totalDuration)
-    document.getElementById('mostSkippedSong').innerText = uriToTrackStringMap.get(mostSkippedSong[0])
-    document.getElementById('numSkips').innerText = numberWithCommas(mostSkippedSong[1])
-    document.getElementById('firstDateTime').innerText = dateTimeToString(firstSongDateTime)
-    freqSongsView = document.getElementById('mostFreqSongs')
-    freqSongsView.innerHTML = ""
-    durationSongsView = document.getElementById('mostDurationSongs')
-    durationSongsView.innerHTML = ""
-    for (let i = 0; i < topLength; i++) {
-        let freqSongItem = ""
-        freqSongItem += '<div class="flex-container listItem"><div class="flex-item-left leftAlign number">'
-        freqSongItem += i + 1
-        freqSongItem += '</div><div class="flex-item-left leftAlign songNameArtist">'
-        freqSongItem += uriToTrackStringMap.get(sortedSongsFreq[i][0])
-        freqSongItem += '</div><div class="spacer"></div><div class="flex-item-right rightAlign numTimes bold">'
-        freqSongItem += sortedSongsFreq[i][1]
-        freqSongItem += '</div></div>'
-
-        freqSongsView.innerHTML += freqSongItem
-
-        let durationSongItem = ""
-        durationSongItem += '<div class="flex-container listItem"><div class="flex-item-left leftAlign number">'
-        durationSongItem += i + 1
-        durationSongItem += '</div><div class="flex-item-left leftAlign songNameArtist">'
-        durationSongItem += uriToTrackStringMap.get(sortedSongDuration[i][0])
-        durationSongItem += '</div><div class="spacer"></div><div class="flex-item-right rightAlign numTimes bold">'
-        durationSongItem += msToString(sortedSongDuration[i][1])
-        durationSongItem += '</div></div>'
-
-        durationSongsView.innerHTML += durationSongItem
     }
 }
 
@@ -79,11 +36,11 @@ var numberDoneProcessed = 0
 var isDataDone = false
 
 function checkIfDataIsDone() {
-    if (numberDoneProcessed == fileNames.length) {
+    if (numberDoneProcessed == myFileNames.length) {
         isDataDone = true
         console.log("ahhhh yay")
         calculateFromMaps()
-        packageData()
+        // packageData()
         // consoleLogFromCalculations()
         outputFromCalculations()
 
@@ -181,25 +138,10 @@ function runFile(fileIndex) {
 
 let packagedData = {}
 function packageData() {
-    // packagedData = {
-    //     "uriToTrackStringMap": uriToTrackStringMap,
-    //     "songFreqMap": songFreqMap,
-    //     "sortedSongsFreq": sortedSongsFreq,
-    //     "songDurationMap": songDurationMap,
-    //     "sortedSongDuration": sortedSongDuration,
-    //     "songSkippedFreq": songSkippedFreq,
-    //     "sortedSongSkippedFreq": sortedSongSkippedFreq,
-    //     "songDataByMonth": songDataByMonth,
-    //     "songDataByDayOfWeek": songDataByDayOfWeek,
-    //     "songDataByHour": songDataByHour,
-    //     "firstSongDateTime": firstSongDateTime,
-    //     "skippedThreshold": skippedThreshold,
-    //     "totalDuration": totalDuration
-    // }
     packagedData = {
-        "uriToTrackStringMap": uriToTrackStringMap,
-        "songFreqMap": songFreqMap,
-        "songDurationMap": songDurationMap,
+        "uriToTrackStringMap": Object.fromEntries(uriToTrackStringMap),
+        "songFreqMap": Object.fromEntries(songFreqMap),
+        "songDurationMap": Object.fromEntries(songDurationMap),
         "songSkippedFreq": songSkippedFreq,
         "songDataByMonth": songDataByMonth,
         "songDataByDayOfWeek": songDataByDayOfWeek,
@@ -208,6 +150,7 @@ function packageData() {
         "skippedThreshold": skippedThreshold,
         "totalDuration": totalDuration
     }
+    document.getElementById("packagedData").style.display = "block"
     document.getElementById("packagedData").innerText = JSON.stringify(packagedData, null, 0)
 }
 

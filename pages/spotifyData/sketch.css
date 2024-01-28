@@ -156,5 +156,39 @@ body {
 
 #packagedData {
 	width: 400px;
-	height: 400px
+	height: 400px;
+	display: none;
+}
+
+#warning {
+	width: 100%;
+	overflow-x: hidden;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+	font-size: 12px;
+	background-color: #ff7474;
+}
+
+@keyframes infiniteScroll {
+	from {
+		transform: translateX(0)
+	}
+
+	to {
+		transform: translateX(-50%)
+	}
+}
+
+.warning-items {
+	display: flex;
+	width: fit-content;
+	animation-name: infiniteScroll;
+	animation-duration: 15s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+.warning-item {
+	white-space: nowrap;
 }
