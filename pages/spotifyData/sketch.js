@@ -78,21 +78,41 @@ function rotateLoader() {
 }
 
 class LoadingBall {
-  constructor(x, y, color) {
+  constructor(x, y, c) {
     this.pos = createVector(x, y)
     this.vel = createVector(0, 0)
     this.r = 5
-    this.color = color
+    this.c = color(c)
+    this.ch = color(c)
+    this.history = []
+    this.historyLength = 5
   }
 
   draw() {
+    this.calculate()
+
+
+    if (frameCount % 1 == 0) {
+      if (this.history.length < this.historyLength) {
+        this.history.push([this.pos.x, this.pos.y])
+      } else {
+        this.history.shift()
+      }
+    }
+
     push()
-    fill(this.color)
+    ellipseMode(RADIUS)
+    for (let i = 0; i < this.history.length; i++) {
+      this.ch.setAlpha(map(i, 0, this.history.length, 0, 255))
+      fill(this.ch)
+      circle(this.history[i][0], this.history[i][1], this.r)
+    }
+    pop()
+    push()
+    fill(this.c)
     ellipseMode(RADIUS)
     circle(this.pos.x, this.pos.y, this.r)
     pop()
-
-    this.calculate()
   }
 
   calculate() {
@@ -111,7 +131,11 @@ class LoadingBall {
     if (this.vel.mag() > 10) {
       this.vel.mult(0.99)
     }
-    this.vel.x += 0.1 * (randomGaussian());
+
+    // add some random noise
+    this.vel.x += 0.1 * randomGaussian();
+    this.vel.y += 0.1 * randomGaussian();
+
     // move
     this.pos.add(this.vel)
 

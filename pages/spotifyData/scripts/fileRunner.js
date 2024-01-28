@@ -4,7 +4,7 @@
 //
 
 var fileNames = [
-    // "Streaming_History_Audio_2014-2016_0",
+    "Streaming_History_Audio_2014-2016_0",
     "Streaming_History_Audio_2016-2018_1",
     "Streaming_History_Audio_2018-2021_2",
     "Streaming_History_Audio_2021-2022_3",
@@ -16,8 +16,21 @@ function getFileName(index) {
     return "data/" + fileNames[index] + ".json"
 }
 
-function doTheThing() {
+function myData() {
     document.getElementById('sketch').style.display = "block"
+    // --------- reset data --------- //
+    totalDuration = 0
+    uriToTrackStringMap = new Map()
+    songFreqMap = new Map()
+    sortedSongsFreq = []
+    songDurationMap = new Map()
+    sortedSongDuration = []
+    songSkippedFreq = new Map()
+    mostSkippedSong = null
+    songDataByMonth = {}
+    songDataByDayOfWeek = {}
+    songDataByHour = {}
+    firstSongDateTime = null
     numberDoneProcessed = 0
     for (let i = 0; i < fileNames.length; i++) {
         runFile(i)
@@ -37,17 +50,20 @@ function checkIfDataIsDone() {
     }
 }
 
+let freqSongsView, durationSongsView
+
 function outputFromCalculations() {
     document.getElementById('instructions').style.display = "none"
     document.getElementById('outputSummary').style.display = "block"
+    document.getElementById('skippedThreshold').innerText = skippedThreshold / 1000
     document.getElementById('numUniqueSongs').innerText = numberWithCommas(uriToTrackStringMap.size)
     document.getElementById('numTimeListened').innerText = msToString(totalDuration)
     document.getElementById('mostSkippedSong').innerText = uriToTrackStringMap.get(mostSkippedSong[0])
     document.getElementById('numSkips').innerText = numberWithCommas(mostSkippedSong[1])
     document.getElementById('firstDateTime').innerText = dateTimeToString(firstSongDateTime)
-    let freqSongsView = document.getElementById('mostFreqSongs')
+    freqSongsView = document.getElementById('mostFreqSongs')
     freqSongsView.innerHTML = ""
-    let durationSongsView = document.getElementById('mostDurationSongs')
+    durationSongsView = document.getElementById('mostDurationSongs')
     durationSongsView.innerHTML = ""
     for (let i = 0; i < topLength; i++) {
         let freqSongItem = ""
@@ -72,6 +88,50 @@ function outputFromCalculations() {
 
         durationSongsView.innerHTML += durationSongItem
     }
+
+    if (!freqScrolling) {
+        freqScrolling = true
+        setTimeout(autoScrollFreq, 3000);
+    }
+    if (!durationScrolling) {
+        durationScrolling = true
+        setTimeout(autoScrollDuration, 3000);
+    }
+}
+
+let freqViewScroll = 1
+let freqScrollDelay
+let freqScrolling = false
+function autoScrollFreq() {
+    if ((freqSongsView.scrollTop == (freqSongsView.scrollHeight - freqSongsView.offsetHeight))
+        || (freqSongsView.scrollTop == 0)) {
+        freqViewScroll *= -1
+    }
+    if (freqSongsView.matches(":hover")) {
+        freqScrollDelay = 5000
+    } else {
+        freqSongsView.scrollBy(0, freqViewScroll)
+        freqScrollDelay = 50
+    }
+    scrolldelay = setTimeout(autoScrollFreq, freqScrollDelay);
+}
+
+let durationViewScroll = 1
+let durationScrollDelay
+let durationScrolling = false
+function autoScrollDuration() {
+    if ((durationSongsView.scrollTop == (durationSongsView.scrollHeight - durationSongsView.offsetHeight))
+        || (durationSongsView.scrollTop == 0)) {
+        durationViewScroll *= -1
+    }
+    if (durationSongsView.matches(":hover")) {
+        durationScrollDelay = 5000
+    } else {
+        durationSongsView.scrollBy(0, durationViewScroll)
+        durationScrollDelay = 50
+    }
+
+    scrolldelay = setTimeout(autoScrollDuration, durationScrollDelay)
 }
 
 function runFile(fileIndex) {
@@ -91,15 +151,19 @@ var songDurationMap = new Map()
 var sortedSongDuration = []
 
 var songSkippedFreq = new Map()
+var sortedSongSkippedFreq = []
 var mostSkippedSong = null
 
 var songDataByMonth = {}
 var songDataByDayOfWeek = {}
+var songDataByHour = {}
 
 var firstSongDateTime = null
 
+var skippedThreshold = 10000
+
 function handleJsonData(data) {
-    // loop through the json data
+    // --------- loop through the json data --------- //
     for (let i = 0; i < data.length; i++) {
         // --------- pruning --------- //
         let uri = data[i]["spotify_track_uri"]
@@ -116,16 +180,18 @@ function handleJsonData(data) {
         }
 
         // --------- get the variables --------- //
+        let trackString = makeTrackString(data[i])
         let ts = data[i]["ts"]
         let date = new Date(ts)
         let msPlayed = data[i]["ms_played"]
-        let skipped = data[i]["skipped"]
+        let skipped = data[i]["skipped"] && msPlayed < skippedThreshold
         let yearMonth = date.getUTCFullYear() + "-" + date.getUTCMonth()
         let dayOfWeek = date.getUTCDay()
+        let hourOfDay = date.getUTCHours()
 
         // --------- add to the uri to track string map for lookup --------- //
         if (!uriToTrackStringMap.has(uri)) {
-            uriToTrackStringMap.set(uri, makeTrackString(data[i]))
+            uriToTrackStringMap.set(uri, trackString)
         }
 
         // --------- first time a song was played ever --------- //
@@ -148,10 +214,11 @@ function handleJsonData(data) {
             }
         }
         songDataByMonth[yearMonth]["duration"] += msPlayed
-        songDataByMonth[yearMonth]["numberSongs"] += 1
-
-        songDataByMonth[yearMonth]["songs"][uri]["freq"] += 1
         songDataByMonth[yearMonth]["songs"][uri]["duration"] += msPlayed
+        if (!skipped) {
+            songDataByMonth[yearMonth]["numberSongs"] += 1
+            songDataByMonth[yearMonth]["songs"][uri]["freq"] += 1
+        }
 
         // --------- song data for day of the week --------- //
         if (!(dayOfWeek in songDataByDayOfWeek)) {
@@ -161,7 +228,21 @@ function handleJsonData(data) {
             }
         }
         songDataByDayOfWeek[dayOfWeek]["duration"] += msPlayed
-        songDataByDayOfWeek[dayOfWeek]["numberSongs"] += 1
+        if (!skipped) {
+            songDataByDayOfWeek[dayOfWeek]["numberSongs"] += 1
+        }
+
+        // --------- song data by hour of the day --------- //
+        if (!(hourOfDay in songDataByHour)) {
+            songDataByHour[hourOfDay] = {
+                "duration": 0,
+                "numberSongs": 0
+            }
+        }
+        songDataByHour[hourOfDay]["duration"] += msPlayed
+        if (!skipped) {
+            songDataByHour[hourOfDay]["numberSongs"] += 1
+        }
 
         // --------- add to total duration --------- //
         totalDuration += msPlayed
@@ -174,14 +255,16 @@ function handleJsonData(data) {
         }
 
         // --------- add to song frequency map --------- //
-        if (songFreqMap.has(uri)) {
-            songFreqMap.set(uri, songFreqMap.get(uri) + 1)
-        } else {
-            songFreqMap.set(uri, 1)
+        if (!skipped) {
+            if (songFreqMap.has(uri)) {
+                songFreqMap.set(uri, songFreqMap.get(uri) + 1)
+            } else {
+                songFreqMap.set(uri, 1)
+            }
         }
 
-        // --------- add to song skipped map if skipped and less than 10 seconds played --------- //
-        if (skipped = true && msPlayed < 10000) {
+        // --------- add to song skipped map if skipped and less than skippedThreshold/1000 seconds played --------- //
+        if (skipped) {
             if (songSkippedFreq.has(uri)) {
                 songSkippedFreq.set(uri, songSkippedFreq.get(uri) + 1)
             } else {
@@ -195,7 +278,9 @@ function handleJsonData(data) {
 }
 
 function calculateFromMaps() {
-    mostSkippedSong = [...songSkippedFreq.entries()].reduce((a, e) => e[1] > a[1] ? e : a)
+    sortedSongSkippedFreq = Array.from(songSkippedFreq);
+    sortedSongSkippedFreq.sort(sortByValue)
+    mostSkippedSong = sortedSongSkippedFreq[0]
 
     sortedSongsFreq = Array.from(songFreqMap);
     sortedSongsFreq.sort(sortByValue)
