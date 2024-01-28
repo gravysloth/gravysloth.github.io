@@ -206,7 +206,7 @@ class Ball {
   }
 
   move() {
-    this.vel.setMag(6)
+    this.vel.setMag(8)
     this.pos.add(this.vel)
   }
 }
