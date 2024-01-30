@@ -26,9 +26,8 @@ function setup() {
 
 function draw() {
   timeSinceStart += deltaTime
-
-  background(24, 24, 26)
-  // background(0)
+  // background(24, 24, 26)
+  background(0)
 
   if (isDataDone) {
     rect(10, 20, 30, 40)

@@ -31,7 +31,7 @@ body {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: #ffffffCC;
+	background: #61468c;
 }
 
 #instructions {
@@ -50,6 +50,21 @@ body {
 	height: fit-content;
 	display: none;
 
+}
+
+#songLookup {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#trackName {
+	margin-top: 10px;
+	padding: 10px;
+	width: 580px;
+	background-color: black;
+	border-style: none;
+	font-family: 'Roboto Mono', monospace;
+	color: aliceblue;
 }
 
 .variable {
@@ -191,4 +206,52 @@ body {
 
 .warning-item {
 	white-space: nowrap;
+}
+
+#trackNameInput {
+	margin-top: 10px;
+	padding: 10px;
+	width: 580px;
+	background-color: black;
+	border-style: none;
+	font-family: 'Roboto Mono', monospace;
+	color: aliceblue;
+	border-radius: 2px;
+}
+
+#trackNameInput:focus {
+	outline: 2px solid #aa74ff;
+	border-radius: 2px;
+}
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: rgb(24, 24, 26);
+	overflow: auto;
+	border: 1px solid #ddd;
+	z-index: 1;
+	width: 598px;
+	max-height: 400px;
+}
+
+.dropdown-content a {
+	color: aliceblue;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+}
+
+.greyText {
+	color: gray;
+}
+
+#noSongsMatch {
+	padding-top: 50px;
+	padding-bottom: 50px;
+	text-align: center;
+}
+
+.highlightTrack {
+	background-color: #61468c;
 }

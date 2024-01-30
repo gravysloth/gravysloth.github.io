@@ -2,7 +2,7 @@
 //
 //
 //
-
+let isMyData = false
 var myFileNames = [
     "Streaming_History_Audio_2014-2016_0",
     "Streaming_History_Audio_2016-2018_1",
@@ -17,6 +17,7 @@ function getFileName(index) {
 }
 
 function myData() {
+    isMyData = true
     document.getElementById('sketch').style.display = "block"
     resetData()
     for (let i = 0; i < myFileNames.length; i++) {
@@ -56,6 +57,7 @@ function checkIfDataIsDone() {
 }
 
 let freqSongsView, durationSongsView
+let trackNameInput, songDropdown
 
 function outputFromCalculations() {
     document.getElementById('instructions').style.display = "none"
@@ -93,6 +95,15 @@ function outputFromCalculations() {
 
         durationSongsView.innerHTML += durationSongItem
     }
+
+    trackNameInput = document.getElementById('trackNameInput')
+    trackNameInput.addEventListener("focusin", (event) => {
+        trackNameInputFocused(true)
+    });
+    trackNameInput.addEventListener("focusout", (event) => {
+        trackNameInputFocused(false)
+    });
+    songDropdown = document.getElementById("songDropdown");
 }
 
 let freqViewScroll = 1
@@ -206,7 +217,7 @@ function handleJsonData(data) {
             continue
         }
         let platform = data[i]["platform"]
-        if (platform == "iOS 9.1 (iPhone5,2)") {
+        if (isMyData && platform == "iOS 9.1 (iPhone5,2)") {
             continue
         }
 
@@ -375,7 +386,7 @@ function dateTimeToString(dateTime) {
 }
 
 function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
 function sortByValue(a, b) {
@@ -384,5 +395,75 @@ function sortByValue(a, b) {
     }
     else {
         return (a[1] > b[1]) ? -1 : 1
+    }
+}
+
+let searchAmount = 50
+let searchTrackNames = []
+let searchTrackNames_bolded = []
+
+let searchTrackNamesMap = new Map()
+
+function filterFunction() {
+    let filter = trackNameInput.value.toUpperCase()
+    searchTrackNames = []
+    searchTrackNames_bolded = []
+    if (filter.length > 0) {
+        for (let [key, value] of uriToTrackStringMap) {
+            txtValue = value.split('-')[0]
+            let filterOutput = txtValue.toUpperCase().indexOf(filter)
+            if (filterOutput > -1) {
+                searchTrackNames.push(value)
+                let boldedTrackname = value.slice(0, filterOutput) + "<b>" + value.slice(filterOutput, filterOutput + filter.length) + "</b>" + value.slice(filterOutput + filter.length)
+                searchTrackNames_bolded.push(boldedTrackname)
+            }
+            if (searchTrackNames.length >= searchAmount) {
+                break
+            }
+        }
+        setTrackNamesToDropDown()
+    } else {
+        dropdown.style.display = "none"
+    }
+}
+
+function setTrackNamesToDropDown() {
+    if (searchTrackNames.length == 0) {
+        songDropdown.innerHTML = "<div id='noSongsMatch'>no songs match :/</div>"
+    } else {
+        dropdown.style.display = "block"
+        songDropdown.innerHTML = ""
+        for (let i = 0; i < searchTrackNames.length; i++) {
+            let listItem = "<a"
+            if (i == 0) {
+                listItem += " class='highlightTrack'"
+            }
+            listItem += ">"
+            listItem += searchTrackNames_bolded[i].split('-')[0]
+            listItem += "<span class='greyText'>"
+            listItem += "-"
+            listItem += searchTrackNames_bolded[i].split('-')[1]
+            listItem += "</span></a>"
+            songDropdown.innerHTML += listItem
+        }
+    }
+}
+
+function trackNameInputFocused(isFocused) {
+    dropdown = document.getElementById("songDropdown");
+    if (isFocused && searchTrackNames.length != 0) {
+        dropdown.style.display = "block"
+    } else {
+        dropdown.style.display = "none"
+    }
+}
+
+function enterTrackname(event) {
+    if (event.key === 'Enter') {
+        if (searchTrackNames.length > 0) {
+            console.log(searchTrackNames[0])
+            trackNameInput.blur()
+            trackNameInput.value = searchTrackNames[0]
+        }
     }
 }
