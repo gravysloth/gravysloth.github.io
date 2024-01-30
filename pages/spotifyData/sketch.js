@@ -30,7 +30,11 @@ function draw() {
   background(0)
 
   if (isDataDone) {
-    rect(10, 20, 30, 40)
+    if (selectedSong != null) {
+      singleSongData()
+    } else {
+      rect(10, 20, 30, 40)
+    }
   } else {
     loading()
   }
@@ -41,6 +45,28 @@ function mouseClicked() {
     rotateBy *= -1
     lg.rotate(rotateBy * 4)
     canvasRotate -= rotateBy * 4
+  }
+}
+
+function singleSongData() {
+}
+
+function calculateForSong(song) {
+  let currDate = new Date(firstSongDateTime)
+  currDate.setUTCDate(1)
+  console.log("ahhh")
+
+  while (currDate <= lastSongDateTime) {
+    console.log(currDate)
+    let yearMonth = currDate.getUTCFullYear() + "-" + currDate.getUTCMonth()
+    console.log(songDataByMonth[yearMonth]["songs"][song])
+
+    if (currDate.getUTCMonth() == 11) {
+      currDate.setUTCMonth(0)
+      currDate.setUTCFullYear(currDate.getUTCFullYear() + 1)
+    } else {
+      currDate.setUTCMonth(currDate.getUTCMonth() + 1)
+    }
   }
 }
 

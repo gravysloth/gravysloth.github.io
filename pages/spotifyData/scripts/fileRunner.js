@@ -201,6 +201,7 @@ var songDataByDayOfWeek = {}
 var songDataByHour = {}
 
 var firstSongDateTime = null
+var lastSongDateTime = null
 
 var skippedThreshold = 10000
 
@@ -239,6 +240,11 @@ function handleJsonData(data) {
         // --------- first time a song was played ever --------- //
         if (firstSongDateTime == null || date < firstSongDateTime) {
             firstSongDateTime = date
+        }
+
+        // --------- last time a song was played ever --------- //
+        if (lastSongDateTime == null || date > lastSongDateTime) {
+            lastSongDateTime = date
         }
 
         // --------- song data for each month --------- //
@@ -399,28 +405,22 @@ function sortByValue(a, b) {
 }
 
 let searchAmount = 50
-let searchTrackNames = []
-let searchTrackNames_bolded = []
-
 let searchTrackNamesUri = []
+let selectedSong = null
 
 function filterFunction() {
     let filter = trackNameInput.value.toUpperCase()
-    searchTrackNames = []
-    searchTrackNames_bolded = []
     searchTrackNamesUri = []
     if (filter.length > 0) {
         for (let [key, value] of uriToTrackStringMap) {
             txtValue = value.split('-')[0]
             let filterOutput = txtValue.toUpperCase().indexOf(filter)
             if (filterOutput > -1) {
-                searchTrackNames.push(value)
                 let boldedTrackname = value.slice(0, filterOutput) + "<b>" + value.slice(filterOutput, filterOutput + filter.length) + "</b>" + value.slice(filterOutput + filter.length)
-                searchTrackNames_bolded.push(boldedTrackname)
 
                 searchTrackNamesUri.push([key, value, boldedTrackname])
             }
-            if (searchTrackNames.length >= searchAmount) {
+            if (searchTrackNamesUri.length >= searchAmount) {
                 break
             }
         }
@@ -464,9 +464,10 @@ function trackNameInputFocused(isFocused) {
 function enterTrackname(event) {
     if (event.key === 'Enter') {
         if (searchTrackNamesUri.length > 0) {
-            console.log(searchTrackNamesUri[0])
             trackNameInput.blur()
-            trackNameInput.value = searchTrackNamesUri[0]
+            trackNameInput.value = searchTrackNamesUri[0][1]
+            selectedSong = searchTrackNamesUri[0][0]
+            calculateForSong(selectedSong)
         }
     }
 }
