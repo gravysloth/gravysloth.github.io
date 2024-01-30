@@ -402,12 +402,13 @@ let searchAmount = 50
 let searchTrackNames = []
 let searchTrackNames_bolded = []
 
-let searchTrackNamesMap = new Map()
+let searchTrackNamesUri = []
 
 function filterFunction() {
     let filter = trackNameInput.value.toUpperCase()
     searchTrackNames = []
     searchTrackNames_bolded = []
+    searchTrackNamesUri = []
     if (filter.length > 0) {
         for (let [key, value] of uriToTrackStringMap) {
             txtValue = value.split('-')[0]
@@ -416,6 +417,8 @@ function filterFunction() {
                 searchTrackNames.push(value)
                 let boldedTrackname = value.slice(0, filterOutput) + "<b>" + value.slice(filterOutput, filterOutput + filter.length) + "</b>" + value.slice(filterOutput + filter.length)
                 searchTrackNames_bolded.push(boldedTrackname)
+
+                searchTrackNamesUri.push([key, value, boldedTrackname])
             }
             if (searchTrackNames.length >= searchAmount) {
                 break
@@ -428,21 +431,21 @@ function filterFunction() {
 }
 
 function setTrackNamesToDropDown() {
-    if (searchTrackNames.length == 0) {
+    if (searchTrackNamesUri.length == 0) {
         songDropdown.innerHTML = "<div id='noSongsMatch'>no songs match :/</div>"
     } else {
         dropdown.style.display = "block"
         songDropdown.innerHTML = ""
-        for (let i = 0; i < searchTrackNames.length; i++) {
+        for (let i = 0; i < searchTrackNamesUri.length; i++) {
             let listItem = "<a"
             if (i == 0) {
                 listItem += " class='highlightTrack'"
             }
             listItem += ">"
-            listItem += searchTrackNames_bolded[i].split('-')[0]
+            listItem += searchTrackNamesUri[i][2].split('-')[0]
             listItem += "<span class='greyText'>"
             listItem += "-"
-            listItem += searchTrackNames_bolded[i].split('-')[1]
+            listItem += searchTrackNamesUri[i][2].split('-')[1]
             listItem += "</span></a>"
             songDropdown.innerHTML += listItem
         }
@@ -451,7 +454,7 @@ function setTrackNamesToDropDown() {
 
 function trackNameInputFocused(isFocused) {
     dropdown = document.getElementById("songDropdown");
-    if (isFocused && searchTrackNames.length != 0) {
+    if (isFocused && searchTrackNamesUri.length != 0) {
         dropdown.style.display = "block"
     } else {
         dropdown.style.display = "none"
@@ -460,10 +463,10 @@ function trackNameInputFocused(isFocused) {
 
 function enterTrackname(event) {
     if (event.key === 'Enter') {
-        if (searchTrackNames.length > 0) {
-            console.log(searchTrackNames[0])
+        if (searchTrackNamesUri.length > 0) {
+            console.log(searchTrackNamesUri[0])
             trackNameInput.blur()
-            trackNameInput.value = searchTrackNames[0]
+            trackNameInput.value = searchTrackNamesUri[0]
         }
     }
 }
