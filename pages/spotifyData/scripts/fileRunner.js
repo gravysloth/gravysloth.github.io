@@ -3,33 +3,56 @@
 //
 //
 let isMyData = false
+let numFiles = 0
 var myFileNames = [
-    "Streaming_History_Audio_2014-2016_0",
-    "Streaming_History_Audio_2016-2018_1",
-    "Streaming_History_Audio_2018-2021_2",
-    "Streaming_History_Audio_2021-2022_3",
-    "Streaming_History_Audio_2022-2024_4",
-    "Streaming_History_Audio_2024_5"
+    "andrea/Streaming_History_Audio_2014-2016_0",
+    "andrea/Streaming_History_Audio_2016-2018_1",
+    "andrea/Streaming_History_Audio_2018-2021_2",
+    "andrea/Streaming_History_Audio_2021-2022_3",
+    "andrea/Streaming_History_Audio_2022-2024_4",
+    "andrea/Streaming_History_Audio_2024_5"
 ]
 
-function getFileName(index) {
-    return "data/" + myFileNames[index] + ".json"
+var kenFileNames = [
+    "ken/Streaming_History_Audio_2015-2017_0",
+    "ken/Streaming_History_Audio_2017-2018_1",
+    "ken/Streaming_History_Audio_2018-2019_2",
+    "ken/Streaming_History_Audio_2019_3",
+    "ken/Streaming_History_Audio_2019-2020_4",
+    "ken/Streaming_History_Audio_2020_5",
+    "ken/Streaming_History_Audio_2020-2021_6",
+    "ken/Streaming_History_Audio_2021_7",
+    "ken/Streaming_History_Audio_2021_8",
+    "ken/Streaming_History_Audio_2021-2022_9",
+    "ken/Streaming_History_Audio_2022_10",
+    "ken/Streaming_History_Audio_2022-2023_11",
+    "ken/Streaming_History_Audio_2023_12",
+    "ken/Streaming_History_Audio_2023-2024_13"
+]
+
+function getFileName(fileName) {
+    return "data/" + fileName + ".json"
 }
 
 function myData() {
-    isMyData = true
-    document.getElementById('sketch').style.display = "block"
-    resetData()
-    for (let i = 0; i < myFileNames.length; i++) {
-        runFile(i)
-    }
+    parseFiles(myFileNames, true)
+}
+
+function kenData() {
+    parseFiles(kenFileNames, false)
 }
 
 function yourData() {
+    // not implemented
+}
+
+function parseFiles(files, _isMyData) {
+    isMyData = _isMyData
+    numFiles = files.length
     document.getElementById('sketch').style.display = "block"
     resetData()
-    for (let i = 0; i < myFileNames.length; i++) {
-        runFile(i)
+    for (let i = 0; i < files.length; i++) {
+        runFile(files[i])
     }
 }
 
@@ -37,7 +60,7 @@ var numberDoneProcessed = 0
 var isDataDone = false
 
 function checkIfDataIsDone() {
-    if (numberDoneProcessed == myFileNames.length) {
+    if (numberDoneProcessed == numFiles) {
         isDataDone = true
         console.log("ahhhh yay")
         calculateFromMaps()
@@ -141,8 +164,8 @@ function autoScrollDuration() {
     scrolldelay = setTimeout(autoScrollDuration, durationScrollDelay)
 }
 
-function runFile(fileIndex) {
-    fetch(getFileName(fileIndex))
+function runFile(fileName) {
+    fetch(getFileName(fileName))
         .then((response) => response.json())
         .then((data) => handleJsonData(data))
 }
