@@ -1,0 +1,13 @@
+/* div {
+	border-style: solid;
+	border-width: 1px;
+	border-color: red;
+} */
+
+body {
+	background-color: rgb(24, 24, 26);
+	margin: 20px;
+	font-size: 16px;
+	font-family: 'Roboto Mono', monospace;
+	color: aliceblue;
+}
