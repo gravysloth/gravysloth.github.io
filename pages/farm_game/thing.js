@@ -55,7 +55,7 @@ class Thing {
         }
 
         // animate thing
-        this.animIndex += this.animSpeed
+        this.animIndex += this.animSpeed * deltaTime / ms
         if (this.animIndex >= this.anim.length) {
             this.animIndex = 0
         }

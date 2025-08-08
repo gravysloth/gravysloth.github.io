@@ -7,15 +7,16 @@ function Log(log) {
 
 function setup() {
     Canvas = createCanvas(1024, 1024 * 3 / 4)
+    frameRate(10)
     GameWidth = width
     GameHeight = height - 132
     loadSounds()
 
     lastMousePressed = false
 
+    CreateThing(new Bush(200, 200))
     CreateThing(new Jojo(400, 400))
     // CreateThing(new Jojo(400, 400))
-    CreateThing(new Bush(200, 200))
 }
 
 function CreateThing(thing) {
@@ -65,6 +66,12 @@ function draw() {
     }
     // noLoop()
 }
+
+// function yPosSort() {
+//     for (let i 0; i < ThingList.length; i++) {
+//         if ()
+//     }
+// }
 
 
 function GetAngle(x1, y1, x2, y2) {

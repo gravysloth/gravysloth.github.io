@@ -4,11 +4,12 @@ class Animal extends Thing {
 
         this.xTarget = x
         this.yTarget = y
-        this.waitTimer = random(50, 200)
-        this.animSpeed = 0.05
+        this.animSpeed = 2
         this.name = "animal"
+        this.waitTimer = random(1 * ms, 5 * ms)
         this.walkTimer = 0
         this.foodTimer = 0
+        this.walkSpeed = 36
         this.eatSpeed = 10
         this.waiting = false
 
@@ -20,15 +21,14 @@ class Animal extends Thing {
     update() {
         super.update()
 
-        if (this.animIndex > 2) {
+        if (this.animIndex > this.anim.length) {
             this.animIndex = 0
             this.image = this.anim[this.animIndex]
         }
 
         // change to idle first frame if waiting
-        let waiting = dist(this.x, this.y, this.xTarget, this.yTarget) <= 4
-        this.waiting = waiting
-        if (waiting || this.pickup) {
+        this.waiting = dist(this.x, this.y, this.xTarget, this.yTarget) <= 4
+        if (this.waiting || this.pickup) {
             this.image = this.anim[0]
         }
 
@@ -52,23 +52,20 @@ class Animal extends Thing {
                 this.newWalk()
             }
 
-            if (waiting) {
-                this.waitTimer = max(this.waitTimer - 1, 0)
+            if (this.waiting) {
+                this.waitTimer = max(this.waitTimer - deltaTime, 0)
             }
             else {
                 let angle = GetAngle(this.x, this.y, this.xTarget, this.yTarget)
-                let speed = 0.6
-                let dx = cos(angle) * speed
+                let dx = cos(angle) * this.walkSpeed * deltaTime / ms
                 if (dx < 0) {
                     this.xDir = -1
                 }
                 if (dx > 0) {
                     this.xDir = 1
                 }
-                let lx = this.x
-                let ly = this.y
                 this.x += dx
-                this.y += sin(angle) * speed
+                this.y += sin(angle) * this.walkSpeed * deltaTime / ms
                 this.walkTimer++
 
                 if (this.walkTimer > 60 * 10) {
@@ -86,7 +83,7 @@ class Animal extends Thing {
     }
 
     newWalk() {
-        this.waitTimer = random(50, 200)
+        this.waitTimer = random(1 * ms, 5 * ms)
         this.walkTimer = 0
         this.xTarget = random(this.radius, GameWidth - this.radius)
         this.yTarget = random(this.radius, GameHeight - this.radius)
@@ -105,7 +102,7 @@ class Animal extends Thing {
 
 class Jojo extends Animal {
     constructor(x, y) {
-        super(x, y, [loadImage("imgs/bush1.png"), loadImage("imgs/bush2.png")])
+        super(x, y, [loadImage("imgs/jojo1.png"), loadImage("imgs/jojo2.png")])
         this.name = "jojo"
     }
 

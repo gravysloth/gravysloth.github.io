@@ -75,11 +75,12 @@ class Fruit extends Thing {
         this.dY = this.y - this.plant.y
 
         this.expirationTimer = 10 * ms
-        this.fastestAnimSpeed = 0.3
+        this.fastestAnimSpeed = 18
         this.flashStartTime = 5 * ms
 
         this.mainDraw = false
         this.picked = false
+        this.expiring = false
         this.draggingLastFrame = false
     }
 
@@ -87,6 +88,7 @@ class Fruit extends Thing {
         super.update()
 
         if (this.isDragging) {
+            this.picked = true
             this.dX = this.x - this.plant.x
             this.dY = this.y - this.plant.y
         } else {
@@ -95,20 +97,22 @@ class Fruit extends Thing {
         }
 
         if (!this.isDragging && this.draggingLastFrame) {
-            this.picked = true
+            this.expiring = true
         }
 
-        if (this.picked) {
+        if (this.expiring) {
             this.expirationTimer -= deltaTime
             this.animSpeed = max(0, this.fastestAnimSpeed - (this.fastestAnimSpeed / this.flashStartTime * this.expirationTimer))
             this.dead = this.expirationTimer <= 0
         }
 
-        let coll = this.collisionObject("jojo")
-        if (coll !== null) {
-            if (coll.canFeed()) {
-                coll.feed()
-                this.dead = true
+        if (this.picked) {
+            let coll = this.collisionObject("jojo")
+            if (coll !== null) {
+                if (coll.canFeed()) {
+                    coll.feed()
+                    this.dead = true
+                }
             }
         }
 
@@ -122,7 +126,7 @@ class Berry extends Fruit {
         super(x, y, [loadImage("imgs/berry1.png"), loadImage("imgs/berry2.png")], plant)
         this.name = "Berry"
 
-        this.expirationTimer = 5 * ms
+        this.expirationTimer = 10 * ms
     }
 
     update() {
