@@ -1,12 +1,32 @@
 class Plant extends Thing {
-    constructor(x, y, imageArray) {
+    constructor(x, y, imageArray, FruitClass, fruitAreaRadius) {
         super(x, y, imageArray)
         this.fruits = []
         this.maxFruit = 3
+        this.FruitClass = FruitClass
+        this.fruitAreaRadius = fruitAreaRadius
+
+        this.newFruitTimer = random(3 * ms, 10 * ms)
+        this.isGrowingNewFruit = false
     }
 
     update() {
         super.update()
+
+        if (this.fruits.length < this.maxFruit && !this.isGrowingNewFruit) {
+            this.isGrowingNewFruit = true
+        }
+
+        if (this.isGrowingNewFruit) {
+            this.newFruitTimer -= deltaTime
+        }
+
+        if (this.newFruitTimer <= 0 && this.isGrowingNewFruit) {
+            this.isGrowingNewFruit = false
+            this.newFruitTimer = random(3 * ms, 10 * ms)
+            this.fruits.push(CreateThing(new this.FruitClass(random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), this, this.fruits.length)))
+            pop1.play()
+        }
 
         let i = 0
         while (i < this.fruits.length) {
@@ -25,6 +45,23 @@ class Plant extends Thing {
         for (let i = 0; i < this.fruits.length; i++) {
             this.fruits[i].draw()
         }
+    }
+}
+
+class Bush extends Plant {
+    constructor(x, y) {
+        super(x, y, [loadImage("imgs/bush1.png"), loadImage("imgs/bush2.png")], Berry, 30)
+        this.animSpeed = 0
+        this.name = "Bush"
+        this.draggable = false
+    }
+
+    update() {
+        super.update()
+
+        // this.animSpeed = this.isDragging ? 0.1 : 0
+
+        return !this.dead
     }
 }
 
@@ -91,30 +128,6 @@ class Berry extends Fruit {
     update() {
         super.update()
 
-
-        return !this.dead
-    }
-}
-
-class Bush extends Plant {
-    constructor(x, y) {
-        super(x, y, [loadImage("imgs/bush1.png"), loadImage("imgs/bush2.png")])
-        this.animSpeed = 0
-        this.name = "Bush"
-        this.draggable = false
-
-        // this.fruits.push(CreateThing(new Berry(0, 0, this)), CreateThing(new Berry(20, 20, this)))
-        this.fruits.push(CreateThing(new Berry(0, 0, this, 0)))
-    }
-
-    update() {
-        super.update()
-
-        // this.animSpeed = this.isDragging ? 0.1 : 0
-
-        if (this.fruits.length < this.maxFruit) {
-            this.fruits.push(CreateThing(new Berry(random(-30, 30), random(-30, 30), this, this.fruits.length)))
-        }
 
         return !this.dead
     }

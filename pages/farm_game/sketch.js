@@ -9,6 +9,7 @@ function setup() {
     Canvas = createCanvas(1024, 1024 * 3 / 4)
     GameWidth = width
     GameHeight = height - 132
+    loadSounds()
 
     lastMousePressed = false
 
