@@ -12,6 +12,8 @@ function setup() {
 
     lastMousePressed = false
 
+    CreateThing(new Jojo(400, 400))
+    // CreateThing(new Jojo(400, 400))
     CreateThing(new Bush(200, 200))
 }
 
@@ -37,13 +39,15 @@ function update() {
     for (let d = ThingList.length - 1; d >= 0; d--) {
         let thing = ThingList[d]
         if (thing.draggable && !isDragging && mouseIsPressed && !lastMousePressed
-            && dist(mouseX, mouseY, thing.pos.x, thing.pos.y) <= thing.radius
+            && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius
             && thing.visible) {
             Log(thing.name)
             isDragging = true
             thing.isDragging = true
         }
     }
+
+    lastMousePressed = mouseIsPressed
 }
 
 function draw() {
@@ -59,4 +63,9 @@ function draw() {
         }
     }
     // noLoop()
+}
+
+
+function GetAngle(x1, y1, x2, y2) {
+    return atan2(y2 - y1, x2 - x1)
 }

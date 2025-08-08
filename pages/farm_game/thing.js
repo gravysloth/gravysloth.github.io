@@ -1,6 +1,7 @@
 class Thing {
     constructor(x, y, imageArray) {
-        this.pos = createVector(x, y)
+        this.x = x
+        this.y = y
         this.dx = 0
         this.dy = 0
 
@@ -29,19 +30,28 @@ class Thing {
             this.isDragging = false
         }
         if (this.isDragging) {
-            this.pos.x = mouseX
-            this.pos.y = mouseY
+            this.x = mouseX
+            this.y = mouseY
         }
 
         if (!this.isDragging) {
-            this.pos.x += this.xSpeed
-            this.pos.y += this.ySpeed
+            this.x += this.xSpeed
+            this.y += this.ySpeed
             this.xSpeed *= 0.95
             this.ySpeed *= 0.95
         }
         else {
             this.xSpeed = 0
             this.ySpeed = 0
+        }
+
+        // restrict thing to only the screen
+        this.x = constrain(this.x, this.radius, GameWidth - this.radius)
+        if (!this.pickup) {
+            this.y = constrain(this.y, this.radius, GameHeight - this.radius)
+        }
+        else {
+            this.y = constrain(this.y, this.radius, height - this.radius)
         }
 
         // animate thing
@@ -53,15 +63,58 @@ class Thing {
         return !this.dead
     }
 
+    collision() {
+        for (let i = 0; i < ThingList.length; i++) {
+            let test = ThingList[i]
+
+            if (dist(test.x, test.y, this.x, this.y) <= test.radius + this.radius && this !== test) {
+                return test
+            }
+        }
+
+        return null
+    }
+
+    collisionObject(thing) {
+        for (let i = 0; i < ThingList.length; i++) {
+            let test = ThingList[i]
+
+            if (dist(test.x, test.y, this.x, this.y) <= test.radius + this.radius
+                && this !== test
+                && test.name.localeCompare(thing) == 0) {
+                return test
+            }
+        }
+
+        return null
+    }
+
+    collisionObjectAt(x, y, thing, radius) {
+        for (let i = 0; i < ThingList.length; i++) {
+            let test = ThingList[i]
+
+            if (dist(test.x, test.y, x, y) <= radius
+                && this !== test
+                && test.name.localeCompare(thing) == 0) {
+                return test
+            }
+        }
+
+        return null
+    }
+
     sprite() {
-        image(this.image, floor(this.pos.x - this.image.width / 2 + this.dx + 0.5), floor(this.pos.y - this.image.height / 2 + this.dy + 0.5))
+        // if (this.name == "jojo") {
+        //     console.log(floor(this.x - this.image.width / 2 + this.dx + 0.5), floor(this.y - this.image.height / 2 + this.dy + 0.5))
+        // }
+        image(this.image, floor(this.x - this.image.width / 2 + this.dx + 0.5), floor(this.y - this.image.height / 2 + this.dy + 0.5))
     }
 
     flipSprite() {
         push()
         translate(width, 0)
         scale(-1, 1)
-        image(this.image, floor(width - this.pos.x - this.image.width / 2 - this.dx + 0.5), floor(this.pos.y - this.image.height / 2 - this.dy + 0.5))
+        image(this.image, floor(width - this.x - this.image.width / 2 - this.dx + 0.5), floor(this.y - this.image.height / 2 - this.dy + 0.5))
         pop()
     }
 

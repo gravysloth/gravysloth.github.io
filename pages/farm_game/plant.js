@@ -2,10 +2,21 @@ class Plant extends Thing {
     constructor(x, y, imageArray) {
         super(x, y, imageArray)
         this.fruits = []
+        this.maxFruit = 3
     }
 
     update() {
         super.update()
+
+        let i = 0
+        while (i < this.fruits.length) {
+            if (this.fruits[i].dead) {
+                this.fruits.splice(i, 1)
+            } else {
+                i++
+            }
+        }
+
         return !this.dead
     }
 
@@ -19,12 +30,12 @@ class Plant extends Thing {
 
 class Fruit extends Thing {
     constructor(x, y, imageArray, plant, index) {
-        super(plant.pos.x + x, plant.pos.y + y, imageArray)
+        super(plant.x + x, plant.y + y, imageArray)
         this.plant = plant
         this.index = index
 
-        this.dX = this.pos.x - this.plant.pos.x
-        this.dY = this.pos.y - this.plant.pos.y
+        this.dX = this.x - this.plant.x
+        this.dY = this.y - this.plant.y
 
         this.expirationTimer = 10 * ms
         this.fastestAnimSpeed = 0.3
@@ -39,11 +50,11 @@ class Fruit extends Thing {
         super.update()
 
         if (this.isDragging) {
-            this.dX = this.pos.x - this.plant.pos.x
-            this.dY = this.pos.y - this.plant.pos.y
+            this.dX = this.x - this.plant.x
+            this.dY = this.y - this.plant.y
         } else {
-            this.pos.x = this.plant.pos.x + this.dX
-            this.pos.y = this.plant.pos.y + this.dY
+            this.x = this.plant.x + this.dX
+            this.y = this.plant.y + this.dY
         }
 
         if (!this.isDragging && this.draggingLastFrame) {
@@ -56,8 +67,12 @@ class Fruit extends Thing {
             this.dead = this.expirationTimer <= 0
         }
 
-        if (this.dead) {
-            this.plant.fruits.splice(this.index, 1)
+        let coll = this.collisionObject("jojo")
+        if (coll !== null) {
+            if (coll.canFeed()) {
+                coll.feed()
+                this.dead = true
+            }
         }
 
         this.draggingLastFrame = this.isDragging
@@ -75,6 +90,8 @@ class Berry extends Fruit {
 
     update() {
         super.update()
+
+
         return !this.dead
     }
 }
@@ -94,6 +111,10 @@ class Bush extends Plant {
         super.update()
 
         // this.animSpeed = this.isDragging ? 0.1 : 0
+
+        if (this.fruits.length < this.maxFruit) {
+            this.fruits.push(CreateThing(new Berry(random(-30, 30), random(-30, 30), this, this.fruits.length)))
+        }
 
         return !this.dead
     }
