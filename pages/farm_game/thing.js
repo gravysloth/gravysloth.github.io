@@ -108,9 +108,6 @@ class Thing {
     }
 
     sprite() {
-        // if (this.name == "jojo") {
-        //     console.log(floor(this.x - this.image.width / 2 + this.dx + 0.5), floor(this.y - this.image.height / 2 + this.dy + 0.5))
-        // }
         image(this.image, floor(this.x - this.image.width / 2 + this.dx + 0.5), floor(this.y - this.image.height / 2 + this.dy + 0.5))
     }
 
@@ -129,5 +126,14 @@ class Thing {
         else {
             this.flipSprite()
         }
+    }
+}
+
+/* ------- ALL OTHER CLASSES ------- */
+
+class Poop extends Thing {
+    constructor(x, y, imageArray) {
+        super(x, y, imageArray)
+        this.name = "Poop"
     }
 }

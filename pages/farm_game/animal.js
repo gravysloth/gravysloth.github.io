@@ -1,14 +1,18 @@
 class Animal extends Thing {
-    constructor(x, y, imageArray) {
+    constructor(x, y, imageArray, foodType) {
         super(x, y, imageArray)
 
         this.xTarget = x
         this.yTarget = y
         this.animSpeed = 2
         this.name = "animal"
+        this.foodType = foodType
         this.waitTimer = random(1 * ms, 5 * ms)
         this.walkTimer = 0
         this.foodTimer = 0
+        this.poopDelay = 5 * ms
+        this.poopTimer = 0
+        this.isCreatingPoop = false
         this.walkSpeed = 36
         this.eatSpeed = 10
         this.waiting = false
@@ -32,19 +36,28 @@ class Animal extends Thing {
             this.image = this.anim[0]
         }
 
-        if (this.foodTimer > 0) {
-            this.foodTimer--
-            if (this.foodTimer <= 0) {
-                this.poop()
-            }
-
-            if (this.foodTimer % 16 < 8) {
-                this.image = this.anim[2]
-            }
-            else {
-                this.image = this.anim[0]
-            }
+        if (this.isCreatingPoop) {
+            this.poopTimer += deltaTime
         }
+        if (this.poopTimer >= this.poopDelay) {
+            this.poopTimer = 0
+            this.isCreatingPoop = false
+            this.poop()
+        }
+
+        // if (this.foodTimer > 0) {
+        //     this.foodTimer -= deltaTime
+        //     if (this.foodTimer <= 0) {
+        //         this.poop()
+        //     }
+
+        //     if (this.foodTimer % 16 < 8) {
+        //         this.image = this.anim[2]
+        //     }
+        //     else {
+        //         this.image = this.anim[0]
+        //     }
+        // }
 
         // randomly walk around if not picked up
         if (!this.pickup && this.foodTimer <= 0) {
@@ -100,15 +113,17 @@ class Animal extends Thing {
     }
     feed() {
         // this.foodTimer = 60 * this.eatSpeed
+        this.isCreatingPoop = true
     }
     poop() {
-        // CreateThing(new Poop(this.x,this.y))
+        CreateThing(new Poop(this.x - this.image.width / 2 * this.xDir, this.y + this.image.height / 2 - 32, [loadImage("imgs/berry1.png")]))
+        console.log("pooped!")
     }
 }
 
 class Jojo extends Animal {
     constructor(x, y) {
-        super(x, y, [loadImage("imgs/jojo1.png"), loadImage("imgs/jojo2.png")])
+        super(x, y, [loadImage("imgs/jojo1.png"), loadImage("imgs/jojo2.png")], Berry)
         this.name = "jojo"
     }
 
