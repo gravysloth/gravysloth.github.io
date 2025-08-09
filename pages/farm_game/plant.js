@@ -87,6 +87,10 @@ class Fruit extends Thing {
     update() {
         super.update()
 
+        if (this.isDragging && !this.draggingLastFrame && !this.picked) {
+            pop1.play()
+        }
+
         if (this.isDragging) {
             this.picked = true
             this.mainDraw = true
@@ -143,7 +147,7 @@ class Berry extends Fruit {
 
     grown() {
         super.grown()
-        pop1.play()
+        // pop1.play()
         newAnimation("berryGrown", this.x, this.y)
     }
 

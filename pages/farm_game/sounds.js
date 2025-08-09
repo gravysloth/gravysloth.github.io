@@ -9,8 +9,8 @@ function loadSounds() {
     crunch1.setVolume(0.8)
 
     wah1 = loadSound('sounds/wah1')
-    wah1.setVolume(5)
+    wah1.setVolume(3)
 
     wah2 = loadSound('sounds/wah2')
-    wah2.setVolume(5)
+    wah2.setVolume(3)
 }

@@ -70,13 +70,11 @@ class Thing {
     }
 
     collision() {
-        for (let i = 0; i < ThingList.length; i++) {
-            let test = ThingList[i]
-
-            if (dist(test.x, test.y, this.x, this.y) <= test.radius + this.radius && this !== test) {
-                return test
+        ThingList.forEach((thing) => {
+            if (dist(thing.x, thing.y, this.x, this.y) <= thing.radius + this.radius && this !== thing) {
+                return thing
             }
-        }
+        })
 
         return null
     }

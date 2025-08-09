@@ -1,5 +1,5 @@
 var ThingList = []
-var ms = 1000
+const ms = 1000
 
 ySortUpdateTime = 1
 
@@ -38,20 +38,18 @@ function update() {
     if (mouseIsPressed && !lastMousePressed) {
         for (let d = ThingList.length - 1; d >= 0; d--) {
             let thing = ThingList[d]
-            if (thing.draggable && !isDragging
-                && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius
-                && thing.visible) {
+            if (thing.draggable && !isDragging && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius && thing.visible) {
                 Log(thing.name)
                 isDragging = true
                 thing.isDragging = true
-                ThingList.push(ThingList.splice(d, 1)[0]);
-                cursor("imgs/cursor_grab.png", 12, 12);
+                ThingList.push(ThingList.splice(d, 1)[0])
+                cursor("imgs/cursor_grab.png", 12, 12)
             }
         }
     }
 
     if (!mouseIsPressed) {
-        cursor("imgs/cursor_hand.png", 12, 12);
+        cursor("imgs/cursor_hand.png", 12, 12)
     }
 
     let i = 0
@@ -66,9 +64,9 @@ function update() {
         }
     }
 
-    for (let i = 0; i < ThingList.length; i++) {
-        ThingList[i].finishUpdate()
-    }
+    ThingList.forEach((thing) => {
+        thing.finishUpdate()
+    })
 
     lastMousePressed = mouseIsPressed
 }
@@ -80,14 +78,13 @@ function draw() {
         yPosSort()
     }
 
-
     // rect(0, 0, GameWidth, GameHeight);
 
-    for (let i = 0; i < ThingList.length; i++) {
-        if (ThingList[i].mainDraw) {
-            ThingList[i].draw()
+    ThingList.forEach((thing) => {
+        if (thing.mainDraw) {
+            thing.draw()
         }
-    }
+    })
 
     drawAnims()
     // noLoop()
