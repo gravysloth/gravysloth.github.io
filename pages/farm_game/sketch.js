@@ -23,6 +23,7 @@ function setup() {
     CreateThing(new Bush(200, 200))
     CreateThing(new Jojo(400, 400))
     // CreateThing(new Jojo(400, 400))
+    cursor("imgs/cursor_hand.png")
 }
 
 function CreateThing(thing) {
@@ -32,6 +33,26 @@ function CreateThing(thing) {
 
 function update() {
     updateAnims()
+
+    isDragging = false
+    if (mouseIsPressed && !lastMousePressed) {
+        for (let d = ThingList.length - 1; d >= 0; d--) {
+            let thing = ThingList[d]
+            if (thing.draggable && !isDragging
+                && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius
+                && thing.visible) {
+                Log(thing.name)
+                isDragging = true
+                thing.isDragging = true
+                ThingList.push(ThingList.splice(d, 1)[0]);
+                cursor("imgs/cursor_grab.png", 12, 12);
+            }
+        }
+    }
+
+    if (!mouseIsPressed) {
+        cursor("imgs/cursor_hand.png", 12, 12);
+    }
 
     let i = 0
     while (i < ThingList.length) {
@@ -45,19 +66,8 @@ function update() {
         }
     }
 
-    isDragging = false
-    if (mouseIsPressed && !lastMousePressed) {
-        for (let d = ThingList.length - 1; d >= 0; d--) {
-            let thing = ThingList[d]
-            if (thing.draggable && !isDragging
-                && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius
-                && thing.visible) {
-                Log(thing.name)
-                isDragging = true
-                thing.isDragging = true
-                ThingList.push(ThingList.splice(d, 1)[0]);
-            }
-        }
+    for (let i = 0; i < ThingList.length; i++) {
+        ThingList[i].finishUpdate()
     }
 
     lastMousePressed = mouseIsPressed

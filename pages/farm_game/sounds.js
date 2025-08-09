@@ -1,4 +1,4 @@
-let pop1, crunch1
+let pop1, crunch1, wah1, wah2
 
 function loadSounds() {
     soundFormats('mp3', 'm4a')
@@ -7,4 +7,10 @@ function loadSounds() {
 
     crunch1 = loadSound('sounds/crunch1')
     crunch1.setVolume(0.8)
+
+    wah1 = loadSound('sounds/wah1')
+    wah1.setVolume(5)
+
+    wah2 = loadSound('sounds/wah2')
+    wah2.setVolume(5)
 }

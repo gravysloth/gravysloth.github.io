@@ -12,6 +12,7 @@ class Thing {
 
         this.xDir = 1
         this.isDragging = false
+        this.draggingLastFrame = false
         this.draggable = true
         this.dead = false
         this.visible = true
@@ -60,7 +61,12 @@ class Thing {
             this.animIndex = 0
         }
         this.image = this.anim[floor(this.animIndex)]
+
         return !this.dead
+    }
+
+    finishUpdate() {
+        this.draggingLastFrame = this.isDragging
     }
 
     collision() {

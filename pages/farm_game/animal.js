@@ -79,6 +79,12 @@ class Animal extends Thing {
             this.yTarget = this.y
         }
 
+        if (!this.draggingLastFrame && this.isDragging) {
+            wah1.play()
+        } else if (this.draggingLastFrame && !this.isDragging) {
+            wah2.play()
+        }
+
         return !this.dead
     }
 

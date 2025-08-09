@@ -82,7 +82,6 @@ class Fruit extends Thing {
         this.mainDraw = false
         this.picked = false
         this.expiring = false
-        this.draggingLastFrame = false
     }
 
     update() {
@@ -120,7 +119,6 @@ class Fruit extends Thing {
             }
         }
 
-        this.draggingLastFrame = this.isDragging
         return !this.dead
     }
 
