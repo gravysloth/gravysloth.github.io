@@ -6,7 +6,7 @@ class Plant extends Thing {
         this.FruitClass = FruitClass
         this.fruitAreaRadius = fruitAreaRadius
 
-        this.newFruitTimer = random(3 * ms, 10 * ms)
+        this.newFruitTimer = random(3 * secondsToMs, 10 * secondsToMs)
         this.isGrowingNewFruit = false
     }
 
@@ -23,7 +23,7 @@ class Plant extends Thing {
 
         if (this.newFruitTimer <= 0 && this.isGrowingNewFruit) {
             this.isGrowingNewFruit = false
-            this.newFruitTimer = random(3 * ms, 10 * ms)
+            this.newFruitTimer = random(3 * secondsToMs, 10 * secondsToMs)
             let newFruit = CreateThing(new this.FruitClass(random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), this, this.fruits.length))
             newFruit.grown()
             this.fruits.push(newFruit)
@@ -75,9 +75,9 @@ class Fruit extends Thing {
         this.dX = this.x - this.plant.x
         this.dY = this.y - this.plant.y
 
-        this.expirationTimer = 20 * ms
+        this.expirationTimer = 20 * secondsToMs
         this.fastestAnimSpeed = 10
-        this.flashStartTime = 5 * ms
+        this.flashStartTime = 5 * secondsToMs
 
         this.mainDraw = false
         this.picked = false
@@ -118,7 +118,6 @@ class Fruit extends Thing {
                     coll.feed()
                     this.eaten()
                     this.dead = true
-                    crunch1.play()
                 }
             }
         }
@@ -126,7 +125,9 @@ class Fruit extends Thing {
         return !this.dead
     }
 
-    grown() { }
+    grown() {
+        fruitGrownSound()
+    }
     eaten() { }
 }
 
@@ -135,7 +136,7 @@ class Berry extends Fruit {
         super(x, y, [loadImage("imgs/berry1.png"), loadImage("imgs/berry2.png")], plant)
         this.name = "Berry"
 
-        this.expirationTimer = 10 * ms
+        this.expirationTimer = 10 * secondsToMs
     }
 
     update() {

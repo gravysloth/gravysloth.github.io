@@ -1,5 +1,6 @@
 var ThingList = []
-const ms = 1000
+var menu
+const secondsToMs = 1000
 
 ySortUpdateTime = 1
 
@@ -17,9 +18,9 @@ function setup() {
     GameWidth = width
     GameHeight = height - 132
     textSize(24)
-
     lastMousePressed = false
 
+    menu = new Menu()
     CreateThing(new Bush(200, 200))
     CreateThing(new Jojo(400, 400))
     // CreateThing(new Jojo(400, 400))
@@ -78,7 +79,12 @@ function draw() {
         yPosSort()
     }
 
-    // rect(0, 0, GameWidth, GameHeight);
+    push()
+    noFill()
+    rect(0, 0, GameWidth, GameHeight)
+    pop()
+
+    menu.draw()
 
     ThingList.forEach((thing) => {
         if (thing.mainDraw) {

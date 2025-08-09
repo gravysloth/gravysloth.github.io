@@ -7,10 +7,10 @@ class Animal extends Thing {
         this.animSpeed = 2
         this.name = "animal"
         this.foodType = foodType
-        this.waitTimer = random(1 * ms, 5 * ms)
+        this.waitTimer = random(1 * secondsToMs, 5 * secondsToMs)
         this.walkTimer = 0
         this.foodTimer = 0
-        this.poopDelay = 5 * ms
+        this.poopDelay = 5 * secondsToMs
         this.poopTimer = 0
         this.isCreatingPoop = false
         this.walkSpeed = 36
@@ -32,7 +32,7 @@ class Animal extends Thing {
 
         // change to idle first frame if waiting
         this.waiting = dist(this.x, this.y, this.xTarget, this.yTarget) <= 4
-        if (this.waiting || this.pickup) {
+        if (this.waiting || this.isDragging) {
             this.image = this.anim[0]
         }
 
@@ -60,7 +60,7 @@ class Animal extends Thing {
         // }
 
         // randomly walk around if not picked up
-        if (!this.pickup && this.foodTimer <= 0) {
+        if (!this.isDragging && this.foodTimer <= 0) {
             if (this.waitTimer <= 0) {
                 this.newWalk()
             }
@@ -70,7 +70,7 @@ class Animal extends Thing {
             }
             else {
                 let angle = GetAngle(this.x, this.y, this.xTarget, this.yTarget)
-                let dx = cos(angle) * this.walkSpeed * deltaTime / ms
+                let dx = cos(angle) * this.walkSpeed * deltaTime / secondsToMs
                 if (dx < 0) {
                     this.xDir = -1
                 }
@@ -78,7 +78,7 @@ class Animal extends Thing {
                     this.xDir = 1
                 }
                 this.x += dx
-                this.y += sin(angle) * this.walkSpeed * deltaTime / ms
+                this.y += sin(angle) * this.walkSpeed * deltaTime / secondsToMs
                 this.walkTimer++
 
                 if (this.walkTimer > 60 * 10) {
@@ -102,7 +102,7 @@ class Animal extends Thing {
     }
 
     newWalk() {
-        this.waitTimer = random(1 * ms, 5 * ms)
+        this.waitTimer = random(1 * secondsToMs, 5 * secondsToMs)
         this.walkTimer = 0
         this.xTarget = random(this.radius, GameWidth - this.radius)
         this.yTarget = random(this.radius, GameHeight - this.radius)
@@ -116,7 +116,7 @@ class Animal extends Thing {
         this.isCreatingPoop = true
     }
     poop() {
-        CreateThing(new Poop(this.x - this.image.width / 2 * this.xDir, this.y + this.image.height / 2 - 32, [loadImage("imgs/berry1.png")]))
+        CreateThing(new Poop(this.x - this.image.width / 2 * this.xDir, this.y + this.image.height / 2 - 32, [loadImage("imgs/poop1.png")]))
         console.log("pooped!")
     }
 }
@@ -131,5 +131,10 @@ class Jojo extends Animal {
         super.update()
 
         return !this.dead
+    }
+
+    feed() {
+        super.feed()
+        eatSound(this.name)
     }
 }

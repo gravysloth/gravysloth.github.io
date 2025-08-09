@@ -17,6 +17,7 @@ class Thing {
         this.dead = false
         this.visible = true
         this.mainDraw = true
+        this.expirable = false
 
         this.xSpeed = 0
         this.ySpeed = 0
@@ -48,7 +49,7 @@ class Thing {
 
         // restrict thing to only the screen
         this.x = constrain(this.x, this.radius, GameWidth - this.radius)
-        if (!this.pickup) {
+        if (!this.isDragging) {
             this.y = constrain(this.y, this.radius, GameHeight - this.radius)
         }
         else {
@@ -56,7 +57,7 @@ class Thing {
         }
 
         // animate thing
-        this.animIndex += this.animSpeed * deltaTime / ms
+        this.animIndex += this.animSpeed * deltaTime / secondsToMs
         if (this.animIndex >= this.anim.length) {
             this.animIndex = 0
         }
@@ -70,11 +71,12 @@ class Thing {
     }
 
     collision() {
-        ThingList.forEach((thing) => {
+        for (let i = 0; i < ThingList.length; i++) {
+            let test = ThingList[i]
             if (dist(thing.x, thing.y, this.x, this.y) <= thing.radius + this.radius && this !== thing) {
                 return thing
             }
-        })
+        }
 
         return null
     }
