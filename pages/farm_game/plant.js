@@ -24,13 +24,14 @@ class Plant extends Thing {
         if (this.newFruitTimer <= 0 && this.isGrowingNewFruit) {
             this.isGrowingNewFruit = false
             this.newFruitTimer = random(3 * ms, 10 * ms)
-            this.fruits.push(CreateThing(new this.FruitClass(random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), this, this.fruits.length)))
-            pop1.play()
+            let newFruit = CreateThing(new this.FruitClass(random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), this, this.fruits.length))
+            newFruit.grown()
+            this.fruits.push(newFruit)
         }
 
         let i = 0
         while (i < this.fruits.length) {
-            if (this.fruits[i].dead) {
+            if (this.fruits[i].dead || this.fruits[i].picked) {
                 this.fruits.splice(i, 1)
             } else {
                 i++
@@ -74,8 +75,8 @@ class Fruit extends Thing {
         this.dX = this.x - this.plant.x
         this.dY = this.y - this.plant.y
 
-        this.expirationTimer = 10 * ms
-        this.fastestAnimSpeed = 18
+        this.expirationTimer = 20 * ms
+        this.fastestAnimSpeed = 10
         this.flashStartTime = 5 * ms
 
         this.mainDraw = false
@@ -89,6 +90,7 @@ class Fruit extends Thing {
 
         if (this.isDragging) {
             this.picked = true
+            this.mainDraw = true
             this.dX = this.x - this.plant.x
             this.dY = this.y - this.plant.y
         } else {
@@ -106,12 +108,14 @@ class Fruit extends Thing {
             this.dead = this.expirationTimer <= 0
         }
 
-        if (this.picked) {
+        if (this.picked && !this.isDragging) {
             let coll = this.collisionObject("jojo")
             if (coll !== null) {
                 if (coll.canFeed()) {
                     coll.feed()
+                    this.eaten()
                     this.dead = true
+                    crunch1.play()
                 }
             }
         }
@@ -119,6 +123,9 @@ class Fruit extends Thing {
         this.draggingLastFrame = this.isDragging
         return !this.dead
     }
+
+    grown() { }
+    eaten() { }
 }
 
 class Berry extends Fruit {
@@ -134,5 +141,16 @@ class Berry extends Fruit {
 
 
         return !this.dead
+    }
+
+    grown() {
+        super.grown()
+        pop1.play()
+        newAnimation("berryGrown", this.x, this.y)
+    }
+
+    eaten() {
+        super.eaten()
+        newAnimation("berryEaten", this.x, this.y)
     }
 }

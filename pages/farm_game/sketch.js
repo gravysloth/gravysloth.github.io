@@ -1,16 +1,22 @@
 var ThingList = []
 var ms = 1000
 
+ySortUpdateTime = 1
+
 function Log(log) {
     console.log(log)
 }
 
+function preload() {
+    loadSounds()
+}
+
 function setup() {
     Canvas = createCanvas(1024, 1024 * 3 / 4)
-    frameRate(10)
+    frameRate(20)
     GameWidth = width
     GameHeight = height - 132
-    loadSounds()
+    textSize(24)
 
     lastMousePressed = false
 
@@ -25,6 +31,8 @@ function CreateThing(thing) {
 }
 
 function update() {
+    updateAnims()
+
     let i = 0
     while (i < ThingList.length) {
         if (ThingList[i].update() && !ThingList[i].dead) {
@@ -38,14 +46,17 @@ function update() {
     }
 
     isDragging = false
-    for (let d = ThingList.length - 1; d >= 0; d--) {
-        let thing = ThingList[d]
-        if (thing.draggable && !isDragging && mouseIsPressed && !lastMousePressed
-            && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius
-            && thing.visible) {
-            Log(thing.name)
-            isDragging = true
-            thing.isDragging = true
+    if (mouseIsPressed && !lastMousePressed) {
+        for (let d = ThingList.length - 1; d >= 0; d--) {
+            let thing = ThingList[d]
+            if (thing.draggable && !isDragging
+                && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius
+                && thing.visible) {
+                Log(thing.name)
+                isDragging = true
+                thing.isDragging = true
+                ThingList.push(ThingList.splice(d, 1)[0]);
+            }
         }
     }
 
@@ -55,7 +66,10 @@ function update() {
 function draw() {
     update()
     background(255, 254, 238)
-    textSize(24)
+    if (frameCount % (ySortUpdateTime * getTargetFrameRate()) == 0) {
+        yPosSort()
+    }
+
 
     // rect(0, 0, GameWidth, GameHeight);
 
@@ -64,14 +78,24 @@ function draw() {
             ThingList[i].draw()
         }
     }
+
+    drawAnims()
     // noLoop()
 }
 
-// function yPosSort() {
-//     for (let i 0; i < ThingList.length; i++) {
-//         if ()
-//     }
-// }
+function yPosSort() {
+    ThingList.sort(yCompare)
+}
+
+function yCompare(a, b) {
+    if (a.y < b.y && !a.isDragging) {
+        return -1;
+    }
+    if (a.y > b.y && !b.isDragging) {
+        return 1;
+    }
+    return 0;
+}
 
 
 function GetAngle(x1, y1, x2, y2) {
