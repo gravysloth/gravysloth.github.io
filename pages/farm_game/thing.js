@@ -2,27 +2,42 @@ class Thing {
     constructor(x, y, imageArray) {
         this.x = x
         this.y = y
+        this.name = "thing"
+
+        /** Position and speed */
+        this.xDir = 1
         this.dx = 0
         this.dy = 0
+        this.xSpeed = 0
+        this.ySpeed = 0
 
+        /** Animation and visuals */
         this.anim = imageArray
         this.image = imageArray[0]
         this.animIndex = 0
         this.animSpeed = 0
+        this.imageOffsetX = 0
+        this.imageOffsetY = 0
 
-        this.xDir = 1
-        this.isDragging = false
-        this.draggingLastFrame = false
-        this.draggable = true
+        /** Statuses and definitions */
         this.dead = false
         this.visible = true
         this.mainDraw = true
+
+        /** Dragging */
+        this.isDragging = false
+        this.isDraggingLastFrame = false
+        this.draggable = true
+        this.restrictPositionToGame = true
+        this.dragOffsetX = 0
+        this.dragOffsetY = 0
+
+        /** Expiration */
         this.expirable = false
-
-        this.xSpeed = 0
-        this.ySpeed = 0
-
-        this.name = "thing"
+        this.expirationTimer = 0
+        this.fastestAnimSpeed = 0
+        this.flashStartTime = 0
+        this.expiring = false
     }
 
     update() {
@@ -32,8 +47,8 @@ class Thing {
             this.isDragging = false
         }
         if (this.isDragging) {
-            this.x = mouseX
-            this.y = mouseY
+            this.x = mouseX + this.dragOffsetX
+            this.y = mouseY + this.dragOffsetY
         }
 
         if (!this.isDragging) {
@@ -47,12 +62,16 @@ class Thing {
             this.ySpeed = 0
         }
 
+        // expiration
+        if (this.expirable) {
+            this.expirationHandling()
+        }
+
         // restrict thing to only the screen
         this.x = constrain(this.x, this.radius, GameWidth - this.radius)
-        if (!this.isDragging) {
+        if (this.restrictPositionToGame && !this.isDragging) {
             this.y = constrain(this.y, this.radius, GameHeight - this.radius)
-        }
-        else {
+        } else {
             this.y = constrain(this.y, this.radius, height - this.radius)
         }
 
@@ -67,7 +86,7 @@ class Thing {
     }
 
     finishUpdate() {
-        this.draggingLastFrame = this.isDragging
+        this.isDraggingLastFrame = this.isDragging
     }
 
     collision() {
@@ -110,15 +129,26 @@ class Thing {
     }
 
     sprite() {
-        image(this.image, floor(this.x - this.image.width / 2 + this.dx + 0.5), floor(this.y - this.image.height / 2 + this.dy + 0.5))
+        image(this.image, floor(this.x - this.image.width / 2 + this.dx + 0.5 + this.imageOffsetX), floor(this.y - this.image.height / 2 + this.dy + 0.5 + this.imageOffsetY))
     }
 
     flipSprite() {
         push()
         translate(width, 0)
         scale(-1, 1)
-        image(this.image, floor(width - this.x - this.image.width / 2 - this.dx + 0.5), floor(this.y - this.image.height / 2 - this.dy + 0.5))
+        image(this.image, floor(width - this.x - this.image.width / 2 - this.dx + 0.5 - this.imageOffsetX), floor(this.y - this.image.height / 2 - this.dy + 0.5 - this.imageOffsetY))
         pop()
+    }
+
+    expirationHandling() {
+        if (this.expiring) {
+            this.expirationTimer -= deltaTime
+            this.animSpeed = max(0, this.fastestAnimSpeed - (this.fastestAnimSpeed / this.flashStartTime * this.expirationTimer))
+            if (this.expirationTimer <= 0) {
+                this.dead = true
+            }
+        }
+
     }
 
     draw() {
@@ -133,9 +163,27 @@ class Thing {
 
 /* ------- ALL OTHER CLASSES ------- */
 
-class Poop extends Thing {
+class Sellable extends Thing {
     constructor(x, y, imageArray) {
         super(x, y, imageArray)
+        this.value = 0
+    }
+
+    sold() {
+        menu.addMoney(this.value)
+    }
+}
+
+class Poop extends Sellable {
+    constructor(x, y, imageArray) {
+        super(x, y, imageArray)
+        this.expirable = true
+        this.expirationTimer = 20 * secondsToMs
+        this.fastestAnimSpeed = 0
+        this.flashStartTime = 5 * secondsToMs
+        this.expiring = true
+        this.value = 1
+
         this.name = "Poop"
     }
 }

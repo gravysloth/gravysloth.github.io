@@ -6,7 +6,7 @@ class Plant extends Thing {
         this.FruitClass = FruitClass
         this.fruitAreaRadius = fruitAreaRadius
 
-        this.newFruitTimer = random(3 * secondsToMs, 10 * secondsToMs)
+        this.newFruitTimer = random(0 * secondsToMs, 3 * secondsToMs)
         this.isGrowingNewFruit = false
     }
 
@@ -23,7 +23,7 @@ class Plant extends Thing {
 
         if (this.newFruitTimer <= 0 && this.isGrowingNewFruit) {
             this.isGrowingNewFruit = false
-            this.newFruitTimer = random(3 * secondsToMs, 10 * secondsToMs)
+            this.newFruitTimer = random(0 * secondsToMs, 3 * secondsToMs)
             let newFruit = CreateThing(new this.FruitClass(random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), random(-1 * this.fruitAreaRadius, this.fruitAreaRadius), this, this.fruits.length))
             newFruit.grown()
             this.fruits.push(newFruit)
@@ -75,20 +75,21 @@ class Fruit extends Thing {
         this.dX = this.x - this.plant.x
         this.dY = this.y - this.plant.y
 
+        this.expirable = true
         this.expirationTimer = 20 * secondsToMs
         this.fastestAnimSpeed = 10
         this.flashStartTime = 5 * secondsToMs
+        this.expiring = false
 
         this.mainDraw = false
         this.picked = false
-        this.expiring = false
     }
 
     update() {
         super.update()
 
-        if (this.isDragging && !this.draggingLastFrame && !this.picked) {
-            pop1.play()
+        if (this.isDragging && !this.isDraggingLastFrame && !this.picked) {
+            fruitPickedSound()
         }
 
         if (this.isDragging) {
@@ -101,14 +102,8 @@ class Fruit extends Thing {
             this.y = this.plant.y + this.dY
         }
 
-        if (!this.isDragging && this.draggingLastFrame) {
+        if (!this.isDragging && this.isDraggingLastFrame && this.picked) {
             this.expiring = true
-        }
-
-        if (this.expiring) {
-            this.expirationTimer -= deltaTime
-            this.animSpeed = max(0, this.fastestAnimSpeed - (this.fastestAnimSpeed / this.flashStartTime * this.expirationTimer))
-            this.dead = this.expirationTimer <= 0
         }
 
         if (this.picked && !this.isDragging) {
@@ -148,7 +143,6 @@ class Berry extends Fruit {
 
     grown() {
         super.grown()
-        // pop1.play()
         newAnimation("berryGrown", this.x, this.y)
     }
 
