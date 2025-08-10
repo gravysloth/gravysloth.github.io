@@ -51,7 +51,7 @@ class Plant extends Thing {
 
 class Bush extends Plant {
     constructor(x, y) {
-        super(x, y, [loadImage("imgs/bush1.png"), loadImage("imgs/bush2.png")], Berry, 30)
+        super(x, y, [loadImage('imgs/bush1.png'), loadImage('imgs/bush2.png')], Berry, 30)
         this.animSpeed = 0
         this.name = "Bush"
         this.draggable = false
@@ -128,7 +128,7 @@ class Fruit extends Thing {
 
 class Berry extends Fruit {
     constructor(x, y, plant) {
-        super(x, y, [loadImage("imgs/berry1.png"), loadImage("imgs/berry2.png")], plant)
+        super(x, y, [loadImage('imgs/berry1.png'), loadImage('imgs/berry2.png')], plant)
         this.name = "Berry"
 
         this.expirationTimer = 10 * secondsToMs

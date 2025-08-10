@@ -178,7 +178,7 @@ class Poop extends Sellable {
     constructor(x, y, imageArray) {
         super(x, y, imageArray)
         this.expirable = true
-        this.expirationTimer = 20 * secondsToMs
+        this.expirationTimer = 60 * secondsToMs
         this.fastestAnimSpeed = 0
         this.flashStartTime = 5 * secondsToMs
         this.expiring = true

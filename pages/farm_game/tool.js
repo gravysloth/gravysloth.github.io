@@ -8,6 +8,7 @@ class Menu {
         this.wallet = 0
 
         this.scooper = CreateThing(new Scooper(this.x + 150, this.y + 50))
+        this.scooperShadow = loadImage('imgs/scooperShadow1.png')
         this.bin = CreateThing(new Bin(this.x + 50, this.y + 60))
     }
 
@@ -17,7 +18,15 @@ class Menu {
         fill(255, 200, 200)
         rect(this.x, this.y, this.width, this.height)
         pop()
-        text("$" + this.wallet, 500, this.y + 60)
+
+        push()
+        textAlign(RIGHT, CENTER);
+        text("$" + this.wallet, this.width - 50, this.y + this.height / 2)
+        pop()
+
+        blendMode(OVERLAY)
+        image(this.scooperShadow, this.scooper.originalX - 32, this.scooper.originalY - 32)
+        blendMode(BLEND)
     }
 
     addMoney(amount) {
@@ -86,6 +95,7 @@ class Scooper extends Tool {
 
         return !this.dead
     }
+
 }
 
 class Bin extends Tool {

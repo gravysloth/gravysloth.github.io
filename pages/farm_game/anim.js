@@ -21,11 +21,11 @@ function newAnimation(name, x, y) {
     let newAnim
     switch (name) {
         case "berryEaten":
-            newAnim = new Anim(x, y, [loadImage("imgs/berryEat1.png"), loadImage("imgs/berryEat2.png"), loadImage("imgs/berryEat3.png"), loadImage("imgs/berryEat4.png")])
+            newAnim = new Anim(x, y, [loadImage('imgs/berryEat1.png'), loadImage('imgs/berryEat2.png'), loadImage('imgs/berryEat3.png'), loadImage('imgs/berryEat4.png')])
             anims.push(newAnim)
             break
         case "berryGrown":
-            newAnim = new Anim(x, y, [loadImage("imgs/berryGrown1.png"), loadImage("imgs/berryGrown2.png"), loadImage("imgs/berryGrown3.png")])
+            newAnim = new Anim(x, y, [loadImage('imgs/berryGrown1.png'), loadImage('imgs/berryGrown2.png'), loadImage('imgs/berryGrown3.png')])
             newAnim.animSpeed = 8
             break
         default:

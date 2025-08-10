@@ -10,7 +10,7 @@ class Animal extends Thing {
         this.waitTimer = random(1 * secondsToMs, 5 * secondsToMs)
         this.walkTimer = 0
         this.foodTimer = 0
-        this.poopDelay = 5 * secondsToMs
+        this.poopDelay = 1 * secondsToMs
         this.poopTimer = 0
         this.isCreatingPoop = false
         this.walkSpeed = 36
@@ -44,20 +44,6 @@ class Animal extends Thing {
             this.isCreatingPoop = false
             this.poop()
         }
-
-        // if (this.foodTimer > 0) {
-        //     this.foodTimer -= deltaTime
-        //     if (this.foodTimer <= 0) {
-        //         this.poop()
-        //     }
-
-        //     if (this.foodTimer % 16 < 8) {
-        //         this.image = this.anim[2]
-        //     }
-        //     else {
-        //         this.image = this.anim[0]
-        //     }
-        // }
 
         // randomly walk around if not picked up
         if (!this.isDragging && this.foodTimer <= 0) {
@@ -116,14 +102,14 @@ class Animal extends Thing {
         this.isCreatingPoop = true
     }
     poop() {
-        CreateThing(new Poop(this.x - this.image.width / 2 * this.xDir, this.y + this.image.height / 2 - 32, [loadImage("imgs/poop1.png")]))
+        CreateThing(new Poop(this.x - this.image.width / 2 * this.xDir, this.y + this.image.height / 2 - 32, [loadImage('imgs/poop1.png'), loadImage('imgs/poop2.png')]))
         console.log("pooped!")
     }
 }
 
 class Jojo extends Animal {
     constructor(x, y) {
-        super(x, y, [loadImage("imgs/jojo1.png"), loadImage("imgs/jojo2.png")], Berry)
+        super(x, y, [loadImage('imgs/jojo1.png'), loadImage('imgs/jojo2.png')], Berry)
         this.name = "jojo"
     }
 

@@ -19,12 +19,13 @@ function setup() {
     GameHeight = height - 132
     textSize(24)
     lastMousePressed = false
+    textFont("VT323");
 
     menu = new Menu()
     CreateThing(new Bush(200, 200))
     CreateThing(new Jojo(400, 400))
     // CreateThing(new Jojo(400, 400))
-    cursor("imgs/cursor_hand.png")
+    cursor('imgs/cursor_hand.png')
 }
 
 function CreateThing(thing) {
@@ -44,13 +45,13 @@ function update() {
                 isDragging = true
                 thing.isDragging = true
                 ThingList.push(ThingList.splice(d, 1)[0])
-                cursor("imgs/cursor_grab.png", 12, 12)
+                cursor('imgs/cursor_grab.png', 12, 12)
             }
         }
     }
 
     if (!mouseIsPressed) {
-        cursor("imgs/cursor_hand.png", 12, 12)
+        cursor('imgs/cursor_hand.png', 12, 12)
     }
 
     let i = 0
