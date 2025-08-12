@@ -11,7 +11,7 @@ function Log(log) {
 function preload() {
     loadSounds()
 }
-
+let bg
 function setup() {
     Canvas = createCanvas(1024, 1024 * 3 / 4)
     frameRate(20)
@@ -20,6 +20,7 @@ function setup() {
     textSize(24)
     lastMousePressed = false
     textFont("VT323");
+    bg = loadImage('imgs/bg_1024.png')
 
     menu = new Menu()
     CreateThing(new Bush(200, 200))
@@ -73,9 +74,12 @@ function update() {
     lastMousePressed = mouseIsPressed
 }
 
+
 function draw() {
     update()
-    background(255, 254, 238)
+    background('#8FC643')
+    image(bg, 0, 0)
+
     if (frameCount % (ySortUpdateTime * getTargetFrameRate()) == 0) {
         yPosSort()
     }
