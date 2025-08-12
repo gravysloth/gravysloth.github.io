@@ -10,7 +10,7 @@ class Animal extends Thing {
         this.waitTimer = random(1 * secondsToMs, 5 * secondsToMs)
         this.walkTimer = 0
         this.foodTimer = 0
-        this.poopDelay = 1 * secondsToMs
+        this.poopDelay = 3 * secondsToMs
         this.poopTimer = 0
         this.isCreatingPoop = false
         this.walkSpeed = 36
@@ -95,7 +95,7 @@ class Animal extends Thing {
     }
 
     canFeed() {
-        return this.foodTimer <= 0
+        return !this.isCreatingPoop
     }
     feed() {
         // this.foodTimer = 60 * this.eatSpeed

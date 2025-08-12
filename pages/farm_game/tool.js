@@ -30,7 +30,10 @@ class Menu {
     }
 
     addMoney(amount) {
-        this.wallet += amount
+        if (amount > 0) {
+            this.wallet += amount
+            soldSound()
+        }
     }
 }
 

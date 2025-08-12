@@ -1,4 +1,4 @@
-let pop1, crunch1, wah1, wah2, scrape1
+let pop1, crunch1, wah1, wah2, scrape1, coins1
 let pops = []
 
 function loadSounds() {
@@ -22,6 +22,8 @@ function loadSounds() {
 
     scrape1 = loadSound('sounds/scrape1')
     scrape1.setVolume(1)
+
+    coins1 = loadSound('sounds/coins1')
 }
 
 function eatSound(name) {
@@ -51,4 +53,8 @@ function fruitGrownSound() {
 
 function poopScoopedSound() {
     scrape1.play()
+}
+
+function soldSound() {
+    coins1.play()
 }
