@@ -187,3 +187,9 @@ class Poop extends Sellable {
         this.name = "Poop"
     }
 }
+
+class Composter extends Thing {
+    constructor(x, y) {
+        super(x, y, [loadImage('imgs/unknown1.png')])
+    }
+}

@@ -24,6 +24,7 @@ class Menu {
         text("$" + this.wallet, this.width - 50, this.y + this.height / 2)
         pop()
 
+        /* Shadows */
         blendMode(OVERLAY)
         image(this.scooperShadow, this.scooper.originalX - 32, this.scooper.originalY - 32)
         blendMode(BLEND)
@@ -103,7 +104,7 @@ class Scooper extends Tool {
 
 class Bin extends Tool {
     constructor(x, y) {
-        super(x, y, [loadImage('imgs/bush1.png')])
+        super(x, y, [loadImage('imgs/unknown1.png')])
         this.name = "Bin"
 
         this.draggable = false

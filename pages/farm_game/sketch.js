@@ -1,5 +1,5 @@
 var ThingList = []
-var menu
+var menu, shop
 const secondsToMs = 1000
 
 ySortUpdateTime = 1
@@ -14,6 +14,7 @@ function preload() {
 let bg
 function setup() {
     Canvas = createCanvas(1024, 1024 * 3 / 4)
+    Canvas.parent("sketch")
     frameRate(20)
     GameWidth = width
     GameHeight = height - 132
@@ -23,6 +24,7 @@ function setup() {
     bg = loadImage('imgs/bg_1024.png')
 
     menu = new Menu()
+    shop = new Shop()
     CreateThing(new Bush(200, 200))
     CreateThing(new Jojo(400, 400))
     // CreateThing(new Jojo(400, 400))
@@ -84,10 +86,10 @@ function draw() {
         yPosSort()
     }
 
-    push()
-    noFill()
-    rect(0, 0, GameWidth, GameHeight)
-    pop()
+    // push()
+    // noFill()
+    // rect(0, 0, GameWidth, GameHeight)
+    // pop()
 
     menu.draw()
 

@@ -98,7 +98,6 @@ class Animal extends Thing {
         return !this.isCreatingPoop
     }
     feed() {
-        // this.foodTimer = 60 * this.eatSpeed
         this.isCreatingPoop = true
     }
     poop() {
