@@ -106,7 +106,6 @@ class Animal extends Thing {
         [loadImage("imgs/poop1.png"), loadImage("imgs/poop2.png")]
       )
     );
-    console.log("pooped!");
   }
 }
 

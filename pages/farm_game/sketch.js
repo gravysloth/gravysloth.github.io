@@ -25,6 +25,7 @@ function setup() {
 
   menu = new Menu();
   shop = new Shop();
+  shop.setUpShop();
   CreateThing(new Bush(200, 200));
   CreateThing(new Jojo(400, 400));
   // CreateThing(new Jojo(400, 400))
@@ -37,6 +38,7 @@ function CreateThing(thing) {
 }
 
 function update() {
+  //   console.log(ThingList);
   updateAnims();
 
   isDragging = false;

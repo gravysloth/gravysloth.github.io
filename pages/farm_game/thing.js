@@ -211,10 +211,30 @@ class Poop extends Sellable {
   }
 }
 
-class Composter extends Thing {
+class ShopItem extends Thing {
+  constructor(x, y, imageArray) {
+    super(x, y, imageArray);
+    this.name = "ShopItem";
+    this.price = 0;
+  }
+
+  update() {
+    super.update();
+
+    return !this.dead;
+  }
+}
+
+class Composter extends ShopItem {
   constructor(x, y) {
     super(x, y, [loadImage("imgs/unknown1.png")]);
-    this.value = 20;
     this.name = "Composter";
+    this.price = 20;
+  }
+
+  update() {
+    super.update();
+
+    return !this.dead;
   }
 }
