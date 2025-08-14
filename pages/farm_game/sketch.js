@@ -1,123 +1,126 @@
-var ThingList = []
-var menu, shop
-const secondsToMs = 1000
+var ThingList = [];
+var menu, shop;
+const secondsToMs = 1000;
 
-ySortUpdateTime = 1
+ySortUpdateTime = 1;
 
 function Log(log) {
-    console.log(log)
+  console.log(log);
 }
 
 function preload() {
-    loadSounds()
+  loadSounds();
 }
-let bg
+let bg;
 function setup() {
-    Canvas = createCanvas(1024, 1024 * 3 / 4)
-    Canvas.parent("sketch")
-    frameRate(20)
-    GameWidth = width
-    GameHeight = height - 132
-    textSize(24)
-    lastMousePressed = false
-    textFont("VT323");
-    bg = loadImage('imgs/bg_1024.png')
+  Canvas = createCanvas(1024, (1024 * 3) / 4);
+  Canvas.parent("sketch");
+  frameRate(20);
+  GameWidth = width;
+  GameHeight = height - 132;
+  textSize(24);
+  lastMousePressed = false;
+  textFont("VT323");
+  bg = loadImage("imgs/bg_1024.png");
 
-    menu = new Menu()
-    shop = new Shop()
-    CreateThing(new Bush(200, 200))
-    CreateThing(new Jojo(400, 400))
-    // CreateThing(new Jojo(400, 400))
-    cursor('imgs/cursor_hand.png')
+  menu = new Menu();
+  shop = new Shop();
+  CreateThing(new Bush(200, 200));
+  CreateThing(new Jojo(400, 400));
+  // CreateThing(new Jojo(400, 400))
+  cursor("imgs/cursor_hand.png");
 }
 
 function CreateThing(thing) {
-    ThingList.push(thing)
-    return thing
+  ThingList.push(thing);
+  return thing;
 }
 
 function update() {
-    updateAnims()
+  updateAnims();
 
-    isDragging = false
-    if (mouseIsPressed && !lastMousePressed) {
-        for (let d = ThingList.length - 1; d >= 0; d--) {
-            let thing = ThingList[d]
-            if (thing.draggable && !isDragging && dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius && thing.visible) {
-                Log(thing.name)
-                isDragging = true
-                thing.isDragging = true
-                ThingList.push(ThingList.splice(d, 1)[0])
-                cursor('imgs/cursor_grab.png', 12, 12)
-            }
-        }
+  isDragging = false;
+  if (mouseIsPressed && !lastMousePressed) {
+    for (let d = ThingList.length - 1; d >= 0; d--) {
+      let thing = ThingList[d];
+      if (
+        thing.draggable &&
+        !isDragging &&
+        dist(mouseX, mouseY, thing.x, thing.y) <= thing.radius &&
+        thing.visible
+      ) {
+        Log(thing.name);
+        isDragging = true;
+        thing.isDragging = true;
+        ThingList.push(ThingList.splice(d, 1)[0]);
+        cursor("imgs/cursor_grab.png", 12, 12);
+      }
     }
+  }
 
-    if (!mouseIsPressed) {
-        cursor('imgs/cursor_hand.png', 12, 12)
+  if (!mouseIsPressed) {
+    cursor("imgs/cursor_hand.png", 12, 12);
+  }
+
+  let i = 0;
+  while (i < ThingList.length) {
+    if (ThingList[i].update() && !ThingList[i].dead) {
+      if (ThingList[i].name == "thing") {
+        console.log("Is this supposed to be drawn?");
+      }
+      i++;
+    } else {
+      ThingList.splice(i, 1);
     }
+  }
 
-    let i = 0
-    while (i < ThingList.length) {
-        if (ThingList[i].update() && !ThingList[i].dead) {
-            if (ThingList[i].name == "thing") {
-                console.log("Is this supposed to be drawn?")
-            }
-            i++
-        } else {
-            ThingList.splice(i, 1)
-        }
-    }
+  ThingList.forEach((thing) => {
+    thing.finishUpdate();
+  });
 
-    ThingList.forEach((thing) => {
-        thing.finishUpdate()
-    })
-
-    lastMousePressed = mouseIsPressed
+  lastMousePressed = mouseIsPressed;
 }
 
-
 function draw() {
-    update()
-    background('#8FC643')
-    image(bg, 0, 0)
+  update();
+  background("#8FC643");
+  image(bg, 0, 0);
 
-    if (frameCount % (ySortUpdateTime * getTargetFrameRate()) == 0) {
-        yPosSort()
+  if (frameCount % (ySortUpdateTime * getTargetFrameRate()) == 0) {
+    yPosSort();
+  }
+
+  // push()
+  // noFill()
+  // rect(0, 0, GameWidth, GameHeight)
+  // pop()
+
+  menu.draw();
+
+  ThingList.forEach((thing) => {
+    if (thing.mainDraw) {
+      thing.draw();
     }
+  });
 
-    // push()
-    // noFill()
-    // rect(0, 0, GameWidth, GameHeight)
-    // pop()
-
-    menu.draw()
-
-    ThingList.forEach((thing) => {
-        if (thing.mainDraw) {
-            thing.draw()
-        }
-    })
-
-    drawAnims()
-    // noLoop()
+  drawAnims();
+  // noLoop()
 }
 
 function yPosSort() {
-    ThingList.sort(yCompare)
+  ThingList.sort(yCompare);
 }
 
 function yCompare(a, b) {
-    if (a.y < b.y && !a.isDragging) {
-        return -1;
-    }
-    if (a.y > b.y && !b.isDragging) {
-        return 1;
-    }
-    return 0;
+  if (a.y < b.y && !a.isDragging) {
+    return -1;
+  }
+  if (a.y > b.y && !b.isDragging) {
+    return 1;
+  }
+  return 0;
 }
 
-
 function GetAngle(x1, y1, x2, y2) {
-    return atan2(y2 - y1, x2 - x1)
+  return atan2(y2 - y1, x2 - x1);
 }
