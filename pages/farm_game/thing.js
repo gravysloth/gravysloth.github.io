@@ -150,11 +150,11 @@ class Thing {
       this.image,
       floor(
         width -
-          this.x -
-          this.image.width / 2 -
-          this.dx +
-          0.5 -
-          this.imageOffsetX
+        this.x -
+        this.image.width / 2 -
+        this.dx +
+        0.5 -
+        this.imageOffsetX
       ),
       floor(this.y - this.image.height / 2 - this.dy + 0.5 - this.imageOffsetY)
     );
@@ -167,7 +167,7 @@ class Thing {
       this.animSpeed = max(
         0,
         this.fastestAnimSpeed -
-          (this.fastestAnimSpeed / this.flashStartTime) * this.expirationTimer
+        (this.fastestAnimSpeed / this.flashStartTime) * this.expirationTimer
       );
       if (this.expirationTimer <= 0) {
         this.dead = true;
@@ -209,4 +209,20 @@ class Poop extends Sellable {
 
     this.name = "Poop";
   }
+
+  update() {
+    super.update();
+
+    if (this.isDragging) {
+      coll = this.collisionObject("Composter");
+      if (coll !== null) {
+        if (coll.addPoopIfNotFull(1) == 1) {
+          this.dead = true
+        }
+      }
+    }
+
+    return !this.dead;
+  }
+
 }

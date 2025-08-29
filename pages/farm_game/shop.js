@@ -29,10 +29,10 @@ class Shop {
       } else {
         console.log(
           "you can't buy " +
-            item.name +
-            ". need " +
-            (item.price - menu.wallet) +
-            " more moneys"
+          item.name +
+          ". need " +
+          (item.price - menu.wallet) +
+          " more moneys"
         );
       }
     };
@@ -67,7 +67,7 @@ class ShopItem extends Thing {
 
 class Composter extends ShopItem {
   constructor(x, y) {
-    super(x, y, [loadImage("imgs/composter.png")]);
+    super(x, y, [loadImage("imgs/composter.png"), loadImage("imgs/composter_1.png"), loadImage("imgs/composter_2.png"), loadImage("imgs/composter_3.png")]);
     this.name = "Composter";
     this.price = 20;
 
@@ -76,6 +76,8 @@ class Composter extends ShopItem {
 
   update() {
     super.update();
+
+    this.image = this.anim[this.poopCount];
 
     return !this.dead;
   }
