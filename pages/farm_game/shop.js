@@ -4,6 +4,7 @@ class Shop {
     this.y = y;
     this.w = w;
     this.h = h;
+    this.inventory;
   }
 
   draw() {
@@ -13,6 +14,7 @@ class Shop {
   }
 
   setUpShop() {
+    this.inventory = {};
     this.addShopItem(new Composter(0, 0));
   }
 
@@ -46,5 +48,47 @@ class Shop {
       return true;
     }
     return false;
+  }
+}
+
+class ShopItem extends Thing {
+  constructor(x, y, imageArray) {
+    super(x, y, imageArray);
+    this.name = "ShopItem";
+    this.price = 0;
+  }
+
+  update() {
+    super.update();
+
+    return !this.dead;
+  }
+}
+
+class Composter extends ShopItem {
+  constructor(x, y) {
+    super(x, y, [loadImage("imgs/composter.png")]);
+    this.name = "Composter";
+    this.price = 20;
+
+    this.poopCount = 0;
+  }
+
+  update() {
+    super.update();
+
+    return !this.dead;
+  }
+
+  /** Returns poop taken */
+  addPoopIfNotFull(num) {
+    const poopSpaceLeft = 3 - this.poopCount;
+    if (poopSpaceLeft < num) {
+      this.poopCount = 3;
+      return poopSpaceLeft;
+    } else {
+      this.poopCount += num;
+      return num;
+    }
   }
 }

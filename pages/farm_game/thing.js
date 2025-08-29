@@ -210,31 +210,3 @@ class Poop extends Sellable {
     this.name = "Poop";
   }
 }
-
-class ShopItem extends Thing {
-  constructor(x, y, imageArray) {
-    super(x, y, imageArray);
-    this.name = "ShopItem";
-    this.price = 0;
-  }
-
-  update() {
-    super.update();
-
-    return !this.dead;
-  }
-}
-
-class Composter extends ShopItem {
-  constructor(x, y) {
-    super(x, y, [loadImage("imgs/unknown1.png")]);
-    this.name = "Composter";
-    this.price = 20;
-  }
-
-  update() {
-    super.update();
-
-    return !this.dead;
-  }
-}

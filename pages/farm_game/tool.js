@@ -5,7 +5,7 @@ class Menu {
     this.width = GameWidth;
     this.height = height - GameHeight;
 
-    this.wallet = 18;
+    this.wallet = 20;
 
     this.scooper = CreateThing(new Scooper(this.x + 150, this.y + 50));
     this.scooperShadow = loadImage("imgs/scooperShadow1.png");
@@ -94,6 +94,11 @@ class Scooper extends Tool {
         this.poopCount = 0;
         this.collectedValue = 0;
       }
+
+      coll = this.collisionObject("Composter");
+      if (coll !== null) {
+        this.poopCount -= coll.addPoopIfNotFull(this.poopCount);
+      }
     }
 
     if (this.poopCount > 0) {
@@ -103,6 +108,16 @@ class Scooper extends Tool {
     }
 
     return !this.dead;
+  }
+
+  draw() {
+    super.draw();
+    if (this.poopCount > 0) {
+      push();
+      textSize(18);
+      text(this.poopCount, this.x + 10, this.y + 25);
+      pop();
+    }
   }
 }
 
